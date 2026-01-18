@@ -43,10 +43,13 @@ export default function Login() {
 
         // Check roles (có thể có nhiều)
         const hasAdminRole = roles.includes("ROLE_ADMIN");
+        const hasTradersRole = roles.includes("ROLE_TRADERS");
 
         setTimeout(() => {
           if (hasAdminRole) {
             navigate("/admin");
+          } else if (hasTradersRole) {
+            navigate("/traders");
           } else {
             navigate("/");
           }
@@ -58,25 +61,38 @@ export default function Login() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-100 flex items-center justify-center px-4 py-8">
-      <div className="w-full max-w-5xl bg-white rounded-xl shadow-lg border border-gray-300 p-8 flex flex-col md:flex-row gap-8">
-
+    <div className="min-h-screen bg-gradient-to-br from-emerald-50 to-teal-100 flex items-center justify-center px-4 py-8 relative overflow-hidden">
+      {/* Decorative blobs */}
+      <div className="absolute -top-10 -left-10 w-60 h-60 bg-emerald-200 rounded-full blur-3xl opacity-40 pointer-events-none"></div>
+      <div className="absolute bottom-0 right-0 w-72 h-72 bg-teal-300 rounded-full blur-3xl opacity-40 pointer-events-none"></div>
+      <div className="absolute top-1/2 right-1/3 w-56 h-56 bg-green-200 rounded-full blur-3xl opacity-30 pointer-events-none"></div>
+      <div className="w-full max-w-5xl bg-gradient-to-br from-teal-50 to-emerald-50 rounded-xl shadow-[0_4px_12px_rgba(0,0,0,0.08)] border border-emerald-200 p-8 flex flex-col md:flex-row gap-8">
         {/* Cột trái: Giới thiệu */}
         <div className="flex-1 flex flex-col justify-start">
           <h2 className="text-2xl font-bold text-green-700 mb-4">
-            🌱 Tại sao nên tạo tài khoản TerraCycle?
+            VeChaiTech làm gì?
           </h2>
           <p className="text-gray-700 text-sm leading-relaxed">
-            Tài khoản TerraCycle cho phép bạn tham gia các chương trình tái chế miễn phí của chúng tôi. Bạn có thể sử dụng tài khoản để tái chế cho bản thân, gia đình, bạn bè, doanh nghiệp và thậm chí cả cộng đồng của bạn. Tham gia các chương trình, nhận nhãn vận chuyển trả trước và theo dõi các lô hàng tái chế cũng như tác động của chúng thông qua tài khoản của bạn. Chương trình của chúng tôi có sẵn tại 48 tiểu bang liên kề, bao gồm Washington, D.C.
+            Ứng dụng Ve Chai Tech - Đặt Lịch Thu Gom Rác là một nền
           </p>
           <p className="text-gray-700 text-sm mt-2">
-            Nếu bạn chọn giải pháp tái chế trả phí Zero Waste Box của chúng tôi, việc tạo tài khoản là không bắt buộc. Tuy nhiên, tài khoản sẽ cho phép bạn theo dõi lịch sử tái chế và thiết lập các đơn hàng định kỳ.
+            tảng hỗ trợ thu gom tái chế phế liệu dành cho người dùng
           </p>
-          <p className="text-red-700 text-sm mt-2">
-            Quan trọng:
+          <p className="text-gray-700 text-sm mt-2">
+            cá nhân và hộ gia đình. Mục tiêu chính của ứng dụng là
+            khuyến khích người dùng thu gom phế liệu tại nhà và nhận
+            điểm thưởng (Rcoin) để đổi quà hoặc tiền. Đây là một dự án
+            nhằm thúc đẩy ý thức bảo vệ môi trường và tối ưu hóa quá trình tái chế.
           </p>
-          <p className="text-red-600 text-sm font-medium mt-4">
-            🔔 Lưu ý: Hãy thêm <span className="font-mono">brigades-no-reply@terracycle.com</span> vào danh bạ email để không bỏ lỡ thông tin quan trọng từ chúng tôi.
+          <h3 className="text-2xl font-bold text-green-700 mb-1">
+            VeChaiTech gom gì?
+          </h3>
+          <p className="text-gray-700 text-sm mt-2">
+            Vỏ lon nước giải khát (Ví dụ: lon nước ngọt, lon bia, …)
+            Nhôm các loại bao gồm các vật dụng bằng nhôm như nồi, lọ, nhôm đà
+            Giấy sách báo đã qua sử dụng
+            Nhựa tổng hợp bao gồm PETE1, 2/4/5
+            Đồng, và Sắt thép
           </p>
         </div>
 

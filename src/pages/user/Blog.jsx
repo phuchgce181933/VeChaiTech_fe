@@ -43,10 +43,10 @@ export default function BlogPage() {
   );
 
   return (
-    <section className="py-16 px-6 bg-[#F1F8E9] min-h-screen">
+    <section className="pt-32 pb-20 px-6 bg-[#bfe395] min-h-screen">
       {/* 🔝 Tiêu đề */}
-      <div className="text-center mb-12">
-        <h1 className="text-5xl font-extrabold bg-clip-text text-transparent bg-gradient-to-r from-[#A5D6A7] to-[#2E7D32]">
+      <div className="text-center mb-10">
+        <h1 className="mb- text-5xl font-extrabold bg-clip-text text-transparent bg-gradient-to-r from-[#A5D6A7] to-[#2E7D32]">
           Tin tức & Blog
         </h1>
         <p className="mt-4 text-lg text-gray-700 max-w-2xl mx-auto">

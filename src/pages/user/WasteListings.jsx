@@ -1,6 +1,8 @@
 import { useEffect, useState, useRef } from "react";
+import { useNavigate } from "react-router-dom";
 
 export default function WasteListings() {
+  const navigate = useNavigate();
   const [wasteListings, setWastes] = useState([]);
   const [loading, setLoading] = useState(true);
   const scrollRef = useRef(null);
@@ -29,30 +31,30 @@ export default function WasteListings() {
 
   if (loading)
     return (
-      <div className="flex justify-center items-center h-[300px]">
+      <div className="flex justify-center items-center h-[1000px] bg-gradient-to-b from-[#E8F5E9] to-[#C8E6C9]">
         <div className="flex flex-col items-center gap-3">
-          <div className="w-10 h-10 border-4 border-green-500 border-t-transparent rounded-full animate-spin"></div>
-          <p className="text-green-700 font-medium">Đang tải danh sách vật liệu...</p>
+          <div className="w-12 h-12 border-4 border-[#66BB6A] border-t-transparent rounded-full animate-spin"></div>
+          <p className="text-[#2E7D32] font-medium">Đang tải danh sách vật liệu...</p>
         </div>
       </div>
     );
 
   return (
-    <div className="px-6 py-10 bg-gradient-to-b from-gray-50 to-green-50 relative">
-      <h1 className="text-3xl font-extrabold text-center text-green-700 mb-8">
+    <div className="px-6 py-16 bg-gradient-to-b from-[#E8F5E9] via-[#D0ECD8] to-[#C8E6C9] relative">
+      <h1 className="text-4xl md:text-5xl font-extrabold text-center bg-clip-text text-transparent bg-gradient-to-r from-[#2E7D32] via-[#00A8CC] to-[#66BB6A] mb-10">
         ♻️ Danh sách vật liệu tái chế
       </h1>
 
       <div className="relative max-w-7xl mx-auto">
-        {/* Nút điều hướng trái */}
+        {/* Nút trái */}
         <button
           onClick={() => scroll("left")}
-          className="absolute left-0 top-1/2 -translate-y-1/2 bg-green-600 text-white w-10 h-10 rounded-full flex items-center justify-center shadow-md hover:bg-green-700 transition z-20"
+          className="absolute left-0 top-1/2 -translate-y-1/2 bg-gradient-to-r from-[#2E7D32] via-[#00A8CC] to-[#66BB6A] text-white w-10 h-10 rounded-full flex items-center justify-center shadow-lg hover:opacity-90 transition z-20"
         >
           ←
         </button>
 
-        {/* Danh sách cuộn ngang */}
+        {/* Cuộn ngang */}
         <div
           ref={scrollRef}
           className="flex gap-6 overflow-x-auto scroll-smooth px-12 py-4 no-scrollbar"
@@ -60,7 +62,8 @@ export default function WasteListings() {
           {wasteListings.map((item) => (
             <div
               key={item.id}
-              className="flex-none w-60 bg-white rounded-2xl shadow-md hover:shadow-xl transform hover:-translate-y-1 transition-all duration-300 flex flex-col items-center text-center p-5"
+              onClick={() => navigate(`/create-collection?wasteListingId=${item.id}`)}
+              className="flex-none w-60 bg-white rounded-2xl shadow-lg hover:shadow-xl transform hover:-translate-y-1 transition-all duration-300 flex flex-col items-center text-center p-6 border border-[#66BB6A]/30 cursor-pointer hover:border-[#66BB6A]"
             >
               <img
                 src={
@@ -68,30 +71,35 @@ export default function WasteListings() {
                   "https://cdn-icons-png.flaticon.com/512/565/565547.png"
                 }
                 alt={item.name}
-                className="w-20 h-20 object-contain mb-4"
+                className="w-full h-36 object-cover rounded-xl mb-4 drop-shadow-md"
               />
-              <h2 className="text-lg font-semibold text-green-700 mb-1">
+              <h2 className="text-lg font-semibold text-[#2E7D32] mb-1">
                 {item.name}
               </h2>
-              <p className="text-gray-500 text-sm mb-2">
+              <p className="text-gray-600 text-sm mb-3">
                 💰{" "}
                 {item.price
                   ? `${item.price.toLocaleString()}đ / kg`
                   : `${item.quantity?.toLocaleString() || 0} kg`}
               </p>
-              <button className="mt-auto bg-green-600 hover:bg-green-700 text-white font-medium text-sm py-2 px-5 rounded-full shadow-sm transition">
-                Bán ngay
-              </button>
             </div>
           ))}
         </div>
 
-        {/* Nút điều hướng phải */}
+        {/* Nút phải */}
         <button
           onClick={() => scroll("right")}
-          className="absolute right-0 top-1/2 -translate-y-1/2 bg-green-600 text-white w-10 h-10 rounded-full flex items-center justify-center shadow-md hover:bg-green-700 transition z-20"
+          className="absolute right-0 top-1/2 -translate-y-1/2 bg-gradient-to-r from-[#2E7D32] via-[#00A8CC] to-[#66BB6A] text-white w-10 h-10 rounded-full flex items-center justify-center shadow-lg hover:opacity-90 transition z-20"
         >
           →
+        </button>
+      </div>
+      <div className="text-center mt-10">
+        <button
+          onClick={() => navigate("/create-collection")}
+          className="bg-gradient-to-r from-[#2E7D32] via-[#00A8CC] to-[#66BB6A] text-white font-bold px-8 py-4 rounded-2xl shadow-xl hover:scale-105 active:scale-95 transition-all text-lg"
+        >
+          📦 Tạo đơn thu gom ngay
         </button>
       </div>
     </div>

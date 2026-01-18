@@ -1,4 +1,4 @@
-import { Outlet, NavLink, Link } from "react-router-dom";
+import { Outlet, NavLink } from "react-router-dom";
 import PropTypes from "prop-types";
 export default function AdminLayout() {
   return (
@@ -9,13 +9,13 @@ export default function AdminLayout() {
         <h1 className="text-xl font-bold text-green-600">VeChaiTech</h1>
 
         {/* Menu bên phải */}
-        <nav className="hidden md:flex space-x-6 text-sm font-medium text-gray-700">
+        {/* <nav className="hidden md:flex space-x-6 text-sm font-medium text-gray-700">
           <Link to="/about" className="hover:text-green-600">Về chúng tôi</Link>
           <Link to="/services" className="hover:text-green-600">Dịch vụ</Link>
           <Link to="/blog" className="hover:text-green-600">Tin tức</Link>
           <Link to="/policy" className="hover:text-green-600">Liên hệ</Link>
           <Link to="/chatbot" className="hover:text-green-600">Trợ lý ảo</Link>
-        </nav>
+        </nav> */}
       </header>
 
 

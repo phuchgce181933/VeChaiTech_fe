@@ -74,118 +74,128 @@ const Register = () => {
 
   return (
     <div style={styles.container}>
-        <div className="w-full max-w-5xl bg-white rounded-xl shadow-lg border border-gray-300 p-8 flex flex-col md:flex-row gap-8">
-      {/* Cột trái: Giới thiệu */}
+      <div className="w-full max-w-5xl bg-gradient-to-br from-teal-50 to-emerald-50 rounded-xl shadow-[0_4px_12px_rgba(0,0,0,0.08)] border border-emerald-200 p-8 flex flex-col md:flex-row gap-8">
+        {/* Cột trái: Giới thiệu */}
         <div className="flex-1 flex flex-col justify-start">
           <h2 className="text-2xl font-bold text-green-700 mb-4">
-            🌱 Tại sao nên tạo tài khoản TerraCycle?
+            VeChaiTech làm gì?
           </h2>
           <p className="text-gray-700 text-sm leading-relaxed">
-            Tài khoản TerraCycle cho phép bạn tham gia các chương trình tái chế miễn phí của chúng tôi. Bạn có thể sử dụng tài khoản để tái chế cho bản thân, gia đình, bạn bè, doanh nghiệp và thậm chí cả cộng đồng của bạn. Tham gia các chương trình, nhận nhãn vận chuyển trả trước và theo dõi các lô hàng tái chế cũng như tác động của chúng thông qua tài khoản của bạn. Chương trình của chúng tôi có sẵn tại 48 tiểu bang liên kề, bao gồm Washington, D.C.
+            Ứng dụng Ve Chai Tech - Đặt Lịch Thu Gom Rác là một nền
           </p>
           <p className="text-gray-700 text-sm mt-2">
-            Nếu bạn chọn giải pháp tái chế trả phí Zero Waste Box của chúng tôi, việc tạo tài khoản là không bắt buộc. Tuy nhiên, tài khoản sẽ cho phép bạn theo dõi lịch sử tái chế và thiết lập các đơn hàng định kỳ.
+            tảng hỗ trợ thu gom tái chế phế liệu dành cho người dùng
           </p>
-          <p className="text-red-700 text-sm mt-2">
-            Quan trọng:
+          <p className="text-gray-700 text-sm mt-2">
+            cá nhân và hộ gia đình. Mục tiêu chính của ứng dụng là
+            khuyến khích người dùng thu gom phế liệu tại nhà và nhận
+            điểm thưởng (Rcoin) để đổi quà hoặc tiền. Đây là một dự án
+            nhằm thúc đẩy ý thức bảo vệ môi trường và tối ưu hóa quá trình tái chế.
           </p>
-          <p className="text-red-600 text-sm font-medium mt-4">
-            🔔 Lưu ý: Hãy thêm <span className="font-mono">brigades-no-reply@terracycle.com</span> vào danh bạ email để không bỏ lỡ thông tin quan trọng từ chúng tôi.
+          <h3 className="text-2xl font-bold text-green-700 mb-1">
+            VeChaiTech gom gì?
+          </h3>
+          <p className="text-gray-700 text-sm mt-2">
+            Vỏ lon nước giải khát (Ví dụ: lon nước ngọt, lon bia, …)
+            Nhôm các loại bao gồm các vật dụng bằng nhôm như nồi, lọ, nhôm đà
+            Giấy sách báo đã qua sử dụng
+            Nhựa tổng hợp bao gồm PETE1, 2/4/5
+            Đồng, và Sắt thép
           </p>
         </div>
-      <form style={styles.form}>
-        <h2>Đăng ký</h2>
-        <input
-          type="email"
-          name="email"
-          placeholder="Email"
-          value={formData.email}
-          onChange={handleChange}
-          required
-          style={styles.input}
-        />
-        <input
-          type="tel"
-          name="phone"
-          placeholder="Số điện thoại"
-          value={formData.phone}
-          onChange={handleChange}
-          required
-          style={styles.input}
-        />
-        <input
-          type="text"
-          name="fullName"
-          placeholder="Họ và tên"
-          value={formData.fullName}
-          onChange={handleChange}
-          required
-          style={styles.input}
-        />
-        <input
-          type="text"
-          name="username"
-          placeholder="Tên đăng nhập"
-          value={formData.username}
-          onChange={handleChange}
-          required
-          style={styles.input}
-        />
-        <input
-          type="password"
-          name="password"
-          placeholder="Mật khẩu"
-          value={formData.password}
-          onChange={handleChange}
-          required
-          style={styles.input}
-        />
+        <form style={styles.form}>
+          <h2>Đăng ký</h2>
+          <input
+            type="email"
+            name="email"
+            placeholder="Email"
+            value={formData.email}
+            onChange={handleChange}
+            required
+            style={styles.input}
+          />
+          <input
+            type="tel"
+            name="phone"
+            placeholder="Số điện thoại"
+            value={formData.phone}
+            onChange={handleChange}
+            required
+            style={styles.input}
+          />
+          <input
+            type="text"
+            name="fullName"
+            placeholder="Họ và tên"
+            value={formData.fullName}
+            onChange={handleChange}
+            required
+            style={styles.input}
+          />
+          <input
+            type="text"
+            name="username"
+            placeholder="Tên đăng nhập"
+            value={formData.username}
+            onChange={handleChange}
+            required
+            style={styles.input}
+          />
+          <input
+            type="password"
+            name="password"
+            placeholder="Mật khẩu"
+            value={formData.password}
+            onChange={handleChange}
+            required
+            style={styles.input}
+          />
 
-        {/* Nhóm button xác thực */}
-        <button
-          type="button"
-          onClick={() => {
-            setVerifyMethod("EMAIL");
-            handleVerify("EMAIL");
-          }}
-          className="mt-6 w-full bg-green-500 hover:bg-green-600 text-white font-bold py-2 rounded"
-        >
-          Xác thực với email
-        </button>
+          {/* Nhóm button xác thực */}
+          <button
+            type="button"
+            onClick={() => {
+              setVerifyMethod("EMAIL");
+              handleVerify("EMAIL");
+            }}
+            className="mt-6 w-full bg-green-500 hover:bg-green-600 text-white font-bold py-2 rounded"
+          >
+            Xác thực với email
+          </button>
 
-        <button
-          type="button"
-          onClick={() => {
-            setVerifyMethod("SMS");
-            handleVerify("SMS");
-          }}
-           className="mt-6 w-full bg-green-500 hover:bg-green-600 text-white font-bold py-2 rounded"
-        >
-          Xác thực với số điện thoại
-        </button>
+          <button
+            type="button"
+            onClick={() => {
+              setVerifyMethod("SMS");
+              handleVerify("SMS");
+            }}
+            className="mt-6 w-full bg-green-500 hover:bg-green-600 text-white font-bold py-2 rounded"
+          >
+            Xác thực với số điện thoại
+          </button>
 
-        {/* Nếu OTP đã gửi thì hiển thị ô nhập OTP và nút xác nhận */}
-        {otpSent && (
-          <>
-            <input
-              type="text"
-              placeholder="Nhập OTP"
-              value={otp}
-              onChange={(e) => setOtp(e.target.value)}
-              style={styles.input}
-            />
+          {/* Nếu OTP đã gửi thì hiển thị ô nhập OTP và nút xác nhận */}
+          {otpSent && (
+            <>
+              <input
+                type="text"
+                placeholder="Nhập OTP"
+                value={otp}
+                onChange={(e) => setOtp(e.target.value)}
+                style={styles.input}
+              />
 
-            <button
-              type="button"
-              style={{ ...styles.button, backgroundColor: "orange", color: "white", width: "100%" }}
-              onClick={handleConfirmOtp}
-            >
-              Xác nhận OTP
-            </button>
-          </>
-        )}
-        {message && <p style={styles.message}>{message}</p>}
-      </form>
+              <button
+                type="button"
+                style={{ ...styles.button, backgroundColor: "linear-gradient(to bottom right, #d1fae5, #a7f3d0)", color: "linear-gradient(to bottom right, #d1fae5, #a7f3d0)", width: "100%" }}
+                onClick={handleConfirmOtp}
+              >
+                Xác nhận OTP
+              </button>
+            </>
+          )}
+          {message && <p style={styles.message}>{message}</p>}
+        </form>
       </div>
     </div>
   );
@@ -198,10 +208,10 @@ const styles = {
     justifyContent: "center",
     alignItems: "center",
     minHeight: "100vh",
-    background: "#f3f3f3",
+    background: "linear-gradient(to bottom right, #e8fdf5, #ccfbf1)",
   },
   form: {
-    background: "white",
+    background: "#e8fdf5",
     padding: "20px",
     borderRadius: "10px",
     width: "320px",
@@ -231,12 +241,12 @@ const styles = {
   },
   verifyButton: {
     backgroundColor: "#2196F3",
-    color: "white",
+    color: "#e8fdf5",
     flex: 1,
   },
   submitButton: {
     backgroundColor: "#4CAF50",
-    color: "white",
+    color: "#e8fdf5",
     width: "100%",
     marginTop: "10px",
   },
