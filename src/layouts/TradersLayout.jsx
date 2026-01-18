@@ -21,7 +21,6 @@ export default function TradersLayout() {
           <span className="text-2xl">♻️</span>
           <h1 className="text-2xl font-bold">VeChaiTech Traders</h1>
         </div>
-
         {/* User info bên phải */}
         <div className="flex items-center gap-4">
           <div className="text-right text-sm">
@@ -44,7 +43,7 @@ export default function TradersLayout() {
           <nav className="flex-1 p-4">
             <ul className="space-y-2">
               <NavItem to="/traders" label="📊 Tổng quan" />
-              <NavItem to="/traders/orders" label="📦 Đơn hàng" />            
+              <NavItem to="/traders/orders" label="📦 Đơn hàng" />
               <NavItem to="/traders/accepted" label="🔄 Đơn đã nhận" />
               <NavItem to="/traders/completed" label="✔️ Đơn hoàn thành" />
               <NavItem to="/traders/profile" label="👤 Hồ sơ" />
@@ -73,10 +72,9 @@ function NavItem({ to, label }) {
       <NavLink
         to={to}
         className={({ isActive }) =>
-          `block px-4 py-2 rounded-lg font-medium transition ${
-            isActive
-              ? "bg-gradient-to-r from-[#2E7D32] to-[#66BB6A] text-white"
-              : "text-gray-700 hover:bg-green-100"
+          `block px-4 py-2 rounded-lg font-medium transition ${isActive
+            ? "bg-gradient-to-r from-[#2E7D32] to-[#66BB6A] text-white"
+            : "text-gray-700 hover:bg-green-100"
           }`
         }
       >

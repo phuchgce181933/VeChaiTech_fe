@@ -56,7 +56,7 @@ export default function UserLayout() {
             VeChaiTech
           </h1>
           </Link>
-          <Link className="hover:text-green-600 transition" to="/policy">Liên hệ</Link>
+          <Link className="hover:text-green-600 transition" to="/policy">Liên hệ Đối tác</Link>
           <Link className="hover:text-green-600 transition" to="/chatbot">Chị Chat</Link>
         </nav>
 

@@ -25,6 +25,8 @@ import TradersSettings from "./pages/traders/Settings";
 import CurrentLocation from "./pages/user/Transactions";
 import MapDirection from "./pages/user/MapDirection";
 import RecyclerDemands from "./pages/user/RecyclerDemands";
+import BlogAdmin from "./pages/admin/BlogAdmin";
+import BlogDetail from "./pages/user/BlogDetail";
 function App() {
   return  (
     <Routes>
@@ -35,6 +37,7 @@ function App() {
         <Route path="wastelistings" element={<WasteListings />} />
         <Route path="create-collection" element={<CreateOrder />} />       
         <Route path="blog" element={<Blog />} />
+        <Route path="/blog/:id" element={<BlogDetail />} />
         <Route path="policy" element={<Policy />} />
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
@@ -51,7 +54,7 @@ function App() {
         <Route path="banner" element={<BannerAdmin/>} />
         <Route path="chatthaitaiche" element={<WasteListingsAdmin/>} />
         <Route path="thumua" element={<OrdersAdmin/>} />
-        <Route path="baocao" element={<h2>Báo cáo</h2>} />
+        <Route path="tintuc" element={<BlogAdmin />} />
         <Route path="quanly" element={<h2>Quản lý</h2>} />
         <Route path="caidat" element={<h2>Cài đặt</h2>} />
       </Route>
