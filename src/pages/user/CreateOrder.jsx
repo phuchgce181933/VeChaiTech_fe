@@ -17,6 +17,65 @@ export default function CreateOrder() {
     longitude: "",
     addressFull: "",
   });
+  const CAN_THO_WARDS = [
+    // ===== Ninh Kiều =====
+    "Phường An Hòa",
+    "Phường An Nghiệp",
+    "Phường An Phú",
+    "Phường Cái Khế",
+    "Phường Hưng Lợi",
+    "Phường Tân An",
+    "Phường Thới Bình",
+    "Phường Xuân Khánh",
+
+    // ===== Bình Thủy =====
+    "Phường An Thới",
+    "Phường Bình Thủy",
+    "Phường Bùi Hữu Nghĩa",
+    "Phường Long Hòa",
+    "Phường Long Tuyền",
+    "Phường Thới An Đông",
+    "Phường Trà An",
+    "Phường Trà Nóc",
+
+    // ===== Cái Răng =====
+    "Phường Ba Láng",
+    "Phường Hưng Phú",
+    "Phường Lê Bình",
+    "Phường Phú Thứ",
+    "Phường Tân Phú",
+    "Phường Thường Thạnh",
+
+    // ===== Ô Môn =====
+    "Phường Châu Văn Liêm",
+    "Phường Long Hưng",
+    "Phường Phước Thới",
+    "Phường Thới An",
+    "Phường Thới Hòa",
+    "Phường Thới Long",
+
+    // ===== Thốt Nốt =====
+    "Phường Tân Hưng",
+    "Phường Tân Lộc",
+    "Phường Tân Thạnh",
+    "Phường Thạnh Hòa",
+    "Phường Thạnh Phước",
+    "Phường Thới Thuận",
+    "Phường Thuận An",
+
+    // ===== Huyện =====
+    "Xã Đông Hiệp",
+    "Xã Đông Thắng",
+    "Xã Thới Đông",
+    "Xã Thới Xuân",
+    "Xã Trung An",
+    "Xã Trung Hưng",
+    "Xã Trung Thạnh",
+    "Xã Trường Long",
+    "Xã Trường Xuân",
+    "Xã Trường Xuân A",
+    "Xã Trường Xuân B",
+  ];
 
   // Lấy tọa độ từ geolocation
   useEffect(() => {
@@ -123,9 +182,9 @@ export default function CreateOrder() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-[#E8F5E9] via-[#D0ECD8] to-[#C8E6C9] py-12 px-4">
-      <div className="max-w-2xl mx-auto">
-        <div className="bg-white rounded-3xl shadow-2xl p-8 md:p-10">
+    <div className="relative">
+      <div className="max-w-3xl mx-auto">
+        <div className="bg-white rounded-3xl shadow-2xl p-8 md:p-10 mt-2 mb-20">
           <h1 className="text-4xl font-bold text-center mb-2 bg-clip-text text-transparent bg-gradient-to-r from-[#2E7D32] via-[#00A8CC] to-[#66BB6A]">
             📦 Tạo Đơn Thu Gom
           </h1>
@@ -198,24 +257,40 @@ export default function CreateOrder() {
 
             {/* Địa chỉ công khai */}
             <div>
-              <label className="block text-sm font-semibold text-[#2E7D32] mb-2">
+              {/* <label className="block text-sm font-semibold text-[#2E7D32] mb-2">
                 Địa chỉ công khai *
-              </label>
-              <input
-                type="text"
-                name="addressPublic"
-                value={formData.addressPublic}
-                onChange={handleChange}
-                placeholder="VD: Quận 1, TP. Hồ Chí Minh"
-                required
-                className="w-full px-4 py-3 border-2 border-[#66BB6A]/50 rounded-lg focus:outline-none focus:border-[#66BB6A] focus:ring-2 focus:ring-[#66BB6A]/20 transition"
-              />
+              </label> */}
+              {/* Địa chỉ công khai (Phường / Xã - Cần Thơ) */}
+              <div>
+                <label className="block text-sm font-semibold text-[#2E7D32] mb-2">
+                  Phường / Xã (TP. Cần Thơ) *
+                </label>
+                <label className="block text-sm font-semibold text-[#f20303] mb-2">
+                  Hệ thống hiện chỉ hỗ trợ TP. Cần Thơ
+                </label>
+
+                <select
+                  name="addressPublic"
+                  value={formData.addressPublic}
+                  onChange={handleChange}
+                  required
+                  className="w-full px-4 py-3 border-2 border-[#66BB6A]/50 rounded-lg
+      focus:outline-none focus:border-[#66BB6A]
+      focus:ring-2 focus:ring-[#66BB6A]/20 transition bg-white"
+                >             
+                  {CAN_THO_WARDS.map((ward) => (
+                    <option key={ward} value={ward}>
+                      {ward}
+                    </option>
+                  ))}
+                </select>
+              </div>
             </div>
 
             {/* Địa chỉ đầy đủ */}
             <div>
               <label className="block text-sm font-semibold text-[#2E7D32] mb-2">
-                Địa chỉ đầy đủ *
+                Địa chỉ chi tiết *
               </label>
               <textarea
                 name="addressFull"

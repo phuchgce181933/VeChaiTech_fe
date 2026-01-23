@@ -59,9 +59,10 @@ const Chatbot = () => {
   return (
     <div className="max-w-xl mx-auto p-6 bg-white shadow-lg rounded-2xl">
       <h2 className="text-3xl font-bold text-green-700 mb-6 text-center">
-        Trợ lý AI VeChaiTech
+        Trợ lý AI VeChaiTech 
+        
       </h2>
-
+      Tính năng này vẫn đang trong giai đoạn thử nghiệm.
       {/* upload */}
       <div className="flex flex-col items-center space-y-4">
         <input

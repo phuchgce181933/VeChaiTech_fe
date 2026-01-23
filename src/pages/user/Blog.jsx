@@ -9,9 +9,26 @@ export default function BlogPage() {
       .then((res) => res.json())
       .then((json) => setPosts(json.data ?? []));
   }, []);
+  const renderTitle = (rawTitle) => {
+    const [title, subtitle] = rawTitle.split("\n");
+
+    return (
+      <div className="space-y-1">
+        <h3 className="text-[#2E7D32] text-lg font-extrabold uppercase leading-snug">
+          {title}
+        </h3>
+
+        {subtitle && (
+          <p className="text-gray-800 text-sm font-bold uppercase leading-snug">
+            {subtitle}
+          </p>
+        )}
+      </div>
+    );
+  };
 
   return (
-    <section className="pt-28 pb-20 px-6 min-h-screen bg-gradient-to-b from-[#E8F5E9] to-[#C8E6C9]">
+    <section className="relative">
       <div className="max-w-7xl mx-auto">
         {/* Title */}
         <h1 className="text-center text-4xl sm:text-5xl font-extrabold text-[#2E7D32] mb-12 tracking-tight">
@@ -34,9 +51,10 @@ export default function BlogPage() {
 
               {/* Content */}
               <div className="p-6">
-                <h3 className="text-lg font-bold text-gray-800 line-clamp-2">
-                  {p.title}
-                </h3>
+                <div className="mb-3">
+                  {renderTitle(p.title)}
+                </div>
+
 
                 {/* <p className="text-gray-600 mt-2 text-sm line-clamp-3">
                   {p.content?.replace(/<[^>]+>/g, "").slice(0, 120) + "..."}

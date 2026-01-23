@@ -7,12 +7,12 @@ export default function Blog() {
   const [form, setForm] = useState({
     id: null,
     title: "",
+    subtitle: "",
     content: "",
   });
 
   const [image, setImage] = useState(null);
 
-  // Load all posts
   const loadData = async () => {
     const res = await axios.get("http://localhost:8080/api/v1/posts");
     setPosts(res.data.data ?? []);
@@ -23,18 +23,23 @@ export default function Blog() {
   }, []);
 
   const resetForm = () => {
-    setForm({ id: null, title: "", content: "" });
+    setForm({ id: null, title: "", subtitle: "", content: "" });
     setImage(null);
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
 
+    const mergedTitle = `${form.title.toUpperCase()}\n${form.subtitle.toUpperCase()}`;
+
     const fd = new FormData();
-    fd.append("post", new Blob(
-      [JSON.stringify({ title: form.title, content: form.content })],
-      { type: "application/json" }
-    ));
+    fd.append(
+      "post",
+      new Blob(
+        [JSON.stringify({ title: mergedTitle, content: form.content })],
+        { type: "application/json" }
+      )
+    );
     if (image) fd.append("image", image);
 
     if (form.id) {
@@ -47,9 +52,19 @@ export default function Blog() {
     resetForm();
   };
 
+
   const handleEdit = (post) => {
-    setForm({ id: post.id, title: post.title, content: post.content });
+    const [title = "", subtitle = ""] = post.title.split("\n");
+
+    setForm({
+      id: post.id,
+      title,
+      subtitle,
+      content: post.content,
+    });
   };
+
+
 
   const handleDelete = async (id) => {
     if (!window.confirm("Xoá bài viết này?")) return;
@@ -57,104 +72,144 @@ export default function Blog() {
     loadData();
   };
 
+  const renderTitle = (rawTitle) => {
+    const [title, subtitle] = rawTitle.split("\n");
+
+    return (
+      <div className="space-y-1">
+        <h3 className="text-green-700 text-xl font-extrabold uppercase">
+          {title}
+        </h3>
+
+        {subtitle && (
+          <p className="text-black text-sm font-bold uppercase">
+            {subtitle}
+          </p>
+        )}
+      </div>
+    );
+  };
+
+
   return (
-    <div className="p-8 space-y-10">
-      {/* Form */}
-      <div className="bg-white shadow rounded-lg p-6">
-        <h2 className="text-xl font-bold mb-4">
-          {form.id ? "✏ Cập nhật bài viết" : "➕ Thêm bài viết"}
+    <div className="p-8 space-y-12 bg-gray-50 min-h-screen">
+
+      {/* FORM */}
+      <div className="bg-white shadow-xl rounded-xl p-6">
+        <h2 className="text-2xl font-bold mb-6 flex items-center gap-2">
+          📝 {form.id ? "Cập nhật bài viết" : "Tạo bài viết mới"}
         </h2>
 
-        <form className="space-y-4" onSubmit={handleSubmit}>
+        <form className="space-y-5" onSubmit={handleSubmit}>
           <input
             type="text"
-            placeholder="Tiêu đề"
-            className="border p-2 w-full"
+            placeholder="TIÊU ĐỀ CHÍNH (VIẾT HOA)"
+            className="border p-3 w-full rounded font-bold"
             value={form.title}
-            onChange={(e) => setForm({ ...form, title: e.target.value })}
+            onChange={(e) =>
+              setForm({ ...form, title: e.target.value })
+            }
             required
           />
 
+
+          <textarea
+            placeholder="CHÚ THÍCH (VIẾT HOA – nhỏ hơn)"
+            className="border p-3 w-full rounded h-20 font-semibold"
+            value={form.subtitle}
+            onChange={(e) =>
+              setForm({ ...form, subtitle: e.target.value })
+            }
+          />
+
+
+
           <textarea
             placeholder="Nội dung bài viết..."
-            className="border p-2 w-full h-40"
+            className="border p-3 w-full h-48 rounded"
             value={form.content}
             onChange={(e) => setForm({ ...form, content: e.target.value })}
             required
           />
 
-          <div className="space-y-2">
-            <label>Ảnh đại diện bài viết</label>
+          <div>
+            <label className="block font-medium mb-1">Ảnh đại diện</label>
             <input type="file" accept="image/*"
               onChange={(e) => setImage(e.target.files[0])} />
 
-            {/* Preview ảnh nếu đang chọn */}
             {image && (
               <img
                 src={URL.createObjectURL(image)}
                 alt=""
-                className="h-20 rounded mt-2 object-cover"
+                className="h-24 rounded mt-3 object-cover border"
               />
             )}
           </div>
 
-          <button className="px-4 py-2 bg-green-600 text-white rounded">
-            {form.id ? "Lưu thay đổi" : "Tạo mới"}
-          </button>
-
-          {form.id && (
-            <button
-              type="button"
-              onClick={resetForm}
-              className="ml-3 px-3 py-2 bg-gray-500 text-white rounded"
-            >
-              Hủy
+          <div className="flex gap-3">
+            <button className="px-6 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700">
+              {form.id ? "💾 Lưu thay đổi" : "➕ Tạo bài viết"}
             </button>
-          )}
+
+            {form.id && (
+              <button
+                type="button"
+                onClick={resetForm}
+                className="px-4 py-2 bg-gray-500 text-white rounded-lg"
+              >
+                Hủy
+              </button>
+            )}
+          </div>
         </form>
       </div>
 
-      {/* List */}
-      <div className="bg-white shadow rounded-lg p-6">
-        <h2 className="text-xl font-bold mb-4">📑 Danh sách bài viết</h2>
+      {/* LIST */}
+      <div className="bg-white shadow-xl rounded-xl p-6">
+        <h2 className="text-2xl font-bold mb-6">📚 Danh sách bài viết</h2>
 
         <table className="w-full border rounded overflow-hidden">
-          <thead className="bg-gray-100">
+          <thead className="bg-green-50">
             <tr>
-              <th className="p-2 border">ID</th>
-              <th className="p-2 border w-1/3">Tiêu đề</th>
-              <th className="p-2 border w-40">Ảnh</th>
-              <th className="p-2 border">Hành động</th>
+              <th className="p-3 border">ID</th>
+              <th className="p-3 border w-1/2">Tiêu đề</th>
+              <th className="p-3 border w-40">Ảnh</th>
+              <th className="p-3 border">Hành động</th>
             </tr>
           </thead>
 
           <tbody>
             {posts.map((p) => (
-              <tr key={p.id}>
-                <td className="border p-2">{p.id}</td>
-                <td className="border p-2">{p.title}</td>
-                <td className="border p-2">
+              <tr key={p.id} className="hover:bg-gray-50">
+                <td className="border p-3">{p.id}</td>
+
+                <td className="border p-3">
+                  {renderTitle(p.title)}
+                </td>
+
+
+                <td className="border p-3">
                   {p.imageUrl ? (
                     <img
                       src={p.imageUrl}
                       alt=""
-                      className="h-14 w-full object-cover rounded"
+                      className="h-16 w-full object-cover rounded"
                     />
                   ) : (
-                    <span className="text-gray-400 italic">No image</span>
+                    <span className="italic text-gray-400">No image</span>
                   )}
                 </td>
 
-                <td className="border p-2 space-x-4">
+                <td className="border p-3 space-x-4">
                   <button
                     onClick={() => handleEdit(p)}
-                    className="text-blue-600 font-semibold"
+                    className="text-blue-600 font-semibold hover:underline"
                   >
                     ✏ Sửa
                   </button>
                   <button
                     onClick={() => handleDelete(p.id)}
-                    className="text-red-600 font-semibold"
+                    className="text-red-600 font-semibold hover:underline"
                   >
                     🗑 Xoá
                   </button>
@@ -162,12 +217,11 @@ export default function Blog() {
               </tr>
             ))}
           </tbody>
-
         </table>
 
         {posts.length === 0 && (
           <p className="pt-6 text-center text-gray-500">
-            Chưa có bài viết nào!
+            Chưa có bài viết nào
           </p>
         )}
       </div>

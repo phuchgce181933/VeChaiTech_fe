@@ -29,6 +29,10 @@ import BlogAdmin from "./pages/admin/BlogAdmin";
 import BlogDetail from "./pages/user/BlogDetail";
 import WalletSuccess from "./pages/traders/WalletSuccess";
 import Cancelled from "./pages/traders/TradersCancelled";
+import Profile from "./pages/user/Profile";
+import UsersAdmin from "./pages/admin/UsersAdmin";
+import AdminRevenuePage from "./pages/admin/AdminRevenue";
+import AdminDashboard from "./pages/admin/AdminDashboard";
 function App() {
   return  (
     <Routes>
@@ -38,11 +42,13 @@ function App() {
         <Route path="trang-chu" element={<Home />} />
         <Route path="about" element={<About />} />
         <Route path="wastelistings" element={<WasteListings />} />
+       
         <Route path="create-collection" element={<CreateOrder />} />       
         <Route path="blog" element={<Blog />} />
         <Route path="blog/:id" element={<BlogDetail />} />
         <Route path="policy" element={<Policy />} />
         <Route path="/login" element={<Login />} />
+        <Route path="/profile" element={<Profile />} />
         <Route path="/register" element={<Register />} />
         <Route path="chatbot" element={<ChatbotPage />} />
         <Route path="recyclerdemands" element={<RecyclerDemands />} />
@@ -53,12 +59,13 @@ function App() {
       {/* Admin layout */}
       <Route path="/admin" element={<AdminLayout />}>
         {/* Route con của admin */}
-        <Route index element={<h2>Báo cáo1</h2>} />
+        <Route index element={<AdminDashboard />} />
         <Route path="banner" element={<BannerAdmin/>} />
         <Route path="chatthaitaiche" element={<WasteListingsAdmin/>} />
         <Route path="thumua" element={<OrdersAdmin/>} />
         <Route path="tintuc" element={<BlogAdmin />} />
-        <Route path="quanly" element={<h2>Quản lý</h2>} />
+        <Route path="users" element={<UsersAdmin />} />
+        <Route path="quanlydoanhthu" element={<AdminRevenuePage />} />
         <Route path="caidat" element={<h2>Cài đặt</h2>} />
       </Route>
       <Route path="/wallet/success" element={<WalletSuccess />} />

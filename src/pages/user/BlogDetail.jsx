@@ -16,6 +16,23 @@ export default function BlogDetail() {
   }, [id]);
 
   if (!post) return <p className="pt-32 text-center">Đang tải bài viết...</p>;
+  const renderTitle = (rawTitle) => {
+    const [title, subtitle] = rawTitle.split("\n");
+
+    return (
+      <div className="mb-6 space-y-2">
+        <h1 className="text-4xl font-extrabold text-[#2E7D32] uppercase leading-tight">
+          {title}
+        </h1>
+
+        {subtitle && (
+          <h2 className="text-base font-bold text-gray-800 uppercase">
+            {subtitle}
+          </h2>
+        )}
+      </div>
+    );
+  };
 
   const renderContent = (text) =>
     text.split(/\s+/).map((word, index) =>
@@ -35,7 +52,7 @@ export default function BlogDetail() {
     <section className="pt-32 pb-20 px-6 bg-[#E8F5E9] min-h-screen">
       <div className="max-w-4xl mx-auto bg-white p-10 rounded-2xl shadow-lg">
         <h1 className="text-4xl font-extrabold text-gray-800 mb-6">
-          {post.title}
+          {renderTitle(post.title)}
         </h1>
 
         {post.createdAt && (
@@ -53,7 +70,7 @@ export default function BlogDetail() {
             href="/blog"
             className="bg-[#A5D6A7] hover:bg-[#81C784] text-white px-6 py-2 rounded-full font-medium transition"
           >
-            ⬅ Quay lại danh sách
+           Quay lại danh sách
           </a>
         </div>
       </div>

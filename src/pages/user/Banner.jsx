@@ -41,7 +41,7 @@ export default function BannerSlide() {
     );
 
   return (
-    <div className="relative w-full h-[300px] md:h-[700px] mt-20 overflow-hidden rounded-3xl shadow-[0_20px_50px_rgba(0,0,0,0.15)] ">
+    <div className="relative w-full h-[1px] md:h-[500px] lg:h-[520px] overflow-hidden rounded-3xl shadow-[0_20px_50px_rgba(0,0,0,0.15)] ">
       <Swiper
         modules={[Navigation, Pagination, Autoplay]}
         navigation={{
@@ -90,16 +90,25 @@ export default function BannerSlide() {
 
               {/* Text animation */}
               {banner.title && (
-                <div className="absolute bottom-10 left-10 text-white drop-shadow-lg animate-fade-in [animation-delay:0.2s]">
-                  <h2 className="text-3xl md:text-5xl font-extrabold tracking-wide">
+                <div className="absolute bottom-12 left-6 md:left-12 text-white max-w-xl animate-fade-in">
+                  <h2 className="text-3xl md:text-5xl font-extrabold leading-tight">
                     {banner.title}
                   </h2>
+
                   {banner.description && (
-                    <p className="text-lg mt-2 max-w-xl text-gray-200 opacity-90">
+                    <p className="mt-4 text-base md:text-lg text-gray-200">
                       {banner.description}
                     </p>
                   )}
+
+                  <button
+                    className="mt-6 px-6 py-3 rounded-full bg-gradient-to-r from-emerald-500 to-teal-500
+    text-white font-medium shadow-lg hover:scale-105 transition"
+                  >
+                    Khám phá ngay
+                  </button>
                 </div>
+
               )}
             </a>
           </SwiperSlide>
