@@ -8,7 +8,7 @@ export function AuthProvider({ children }) {
   const [isLoading, setIsLoading] = useState(true); // Tracking khi user đang load
 
   const login = (userData, token, roles) => {
-    const expirationTime = Date.now() + 5 * 60 * 1000; // ✅ 5 phút
+    const expirationTime = Date.now() + 10 * 60 * 1000; //  10 phút
 
     const userWithRole = {
       ...userData,

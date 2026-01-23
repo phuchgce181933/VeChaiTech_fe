@@ -28,6 +28,7 @@ import RecyclerDemands from "./pages/user/RecyclerDemands";
 import BlogAdmin from "./pages/admin/BlogAdmin";
 import BlogDetail from "./pages/user/BlogDetail";
 import WalletSuccess from "./pages/traders/WalletSuccess";
+import Cancelled from "./pages/traders/TradersCancelled";
 function App() {
   return  (
     <Routes>
@@ -75,6 +76,7 @@ function App() {
         <Route path="orders" element={<TradersOrders />} />        
         <Route path="accepted" element={<TradersAccepted />} />
         <Route path="completed" element={<TradersCompleted />} />
+        <Route path="cancelled" element={<Cancelled />} />
         <Route path="profile" element={<TradersProfile />} />
         <Route path="settings" element={<TradersSettings />} />
       </Route>

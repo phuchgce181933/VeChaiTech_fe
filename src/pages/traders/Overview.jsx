@@ -13,73 +13,63 @@ export default function TradersOverview() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
-  // lưu balance cũ để so sánh
   const lastBalanceRef = useRef(0);
 
   const authHeader = {
     Authorization: `Bearer ${user?.token}`,
   };
 
-  /* =================== INIT LOAD =================== */
+  /* ================= INIT ================= */
   useEffect(() => {
-    if (user?.token) {
-      fetchWalletData();
-    }
+    if (user?.token) fetchWalletData();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [user?.token]);
 
-  /* =================== POLLING KHI ĐANG CHỜ THANH TOÁN =================== */
+  /* ================= POLLING ================= */
   useEffect(() => {
     if (!waitingPayment) return;
 
-    const interval = setInterval(() => {
-      fetchWalletData();
-    }, 5000); // 5s
-
+    const interval = setInterval(fetchWalletData, 5000);
     return () => clearInterval(interval);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [waitingPayment]);
 
-  /* =================== FETCH WALLET =================== */
+  /* ================= FETCH ================= */
   const fetchWalletData = async () => {
     try {
       setError("");
 
-      // BALANCE
       const balanceRes = await fetch(
         "http://localhost:8080/api/v1/wallet/balance",
         { headers: authHeader }
       );
       const balanceData = await balanceRes.json();
 
-      // nếu đang chờ thanh toán và balance tăng → xác nhận thành công
       if (waitingPayment && balanceData > lastBalanceRef.current) {
         setWaitingPayment(false);
         setDepositAmount("");
-        alert("✅ Thanh toán thành công, tiền đã vào ví!");
+        alert("✅ Thanh toán thành công, số dư đã được cập nhật!");
       }
 
       lastBalanceRef.current = balanceData;
       setBalance(balanceData);
 
-      // TRANSACTIONS
       const transRes = await fetch(
         "http://localhost:8080/api/v1/wallet/transactions",
         { headers: authHeader }
       );
       const transData = await transRes.json();
       if (Array.isArray(transData)) {
-        setTransactions(transData.slice(0, 5));
+        setTransactions(transData.slice(0, 6));
       }
-    } catch (err) {
-      console.error(err);
+    } catch {
       setError("Không thể tải thông tin ví");
     } finally {
       setLoading(false);
     }
   };
 
-  /* =================== DEPOSIT =================== */
+  /* ================= DEPOSIT ================= */
   const handleDeposit = async () => {
     if (!depositAmount || Number(depositAmount) < 10000) {
       alert("Số tiền tối thiểu là 10.000₫");
@@ -91,10 +81,7 @@ export default function TradersOverview() {
 
       const res = await fetch(
         `http://localhost:8080/api/v1/wallet/deposit?amount=${depositAmount}`,
-        {
-          method: "POST",
-          headers: authHeader,
-        }
+        { method: "POST", headers: authHeader }
       );
 
       if (!res.ok) throw new Error();
@@ -102,19 +89,17 @@ export default function TradersOverview() {
       const data = await res.json();
 
       if (data.checkoutUrl) {
-        setWaitingPayment(true); // 🔥 chỉ đánh dấu chờ
+        setWaitingPayment(true);
         window.location.href = data.checkoutUrl;
-      } else {
-        alert("Không tạo được link thanh toán");
       }
-    } catch (err) {
-      alert("Lỗi khi tạo giao dịch nạp tiền");
+    } catch {
+      alert("Không thể tạo giao dịch nạp tiền");
     } finally {
       setDepositLoading(false);
     }
   };
 
-  /* =================== UI =================== */
+  /* ================= UI ================= */
   if (loading) {
     return (
       <div className="flex justify-center items-center h-96">
@@ -128,78 +113,88 @@ export default function TradersOverview() {
   }
 
   return (
-    <div className="space-y-6">
-      <h1 className="text-3xl font-bold">
-        📊 Bảng điều khiển – {user?.username}
-      </h1>
-
-      {/* NẠP TIỀN */}
-      <div className="bg-white p-6 rounded shadow flex items-center gap-4">
-        <input
-          type="number"
-          placeholder="Nhập số tiền (VND)"
-          value={depositAmount}
-          onChange={(e) => setDepositAmount(e.target.value)}
-          className="border px-4 py-2 rounded w-64"
-          disabled={waitingPayment}
-        />
-        <button
-          onClick={handleDeposit}
-          disabled={depositLoading || waitingPayment}
-          className="bg-green-600 text-white px-6 py-2 rounded disabled:opacity-50"
-        >
-          {depositLoading
-            ? "Đang xử lý..."
-            : waitingPayment
-            ? "Đang chờ thanh toán..."
-            : "Nạp tiền"}
-        </button>
+    <div className="space-y-8">
+      {/* HEADER */}
+      <div>
+        <h1 className="text-3xl font-bold text-gray-900">
+          📊 Tổng quan tài khoản
+        </h1>
+        <p className="text-gray-500 mt-1">
+          Xin chào <b>{user?.username}</b>, quản lý ví của bạn tại đây
+        </p>
       </div>
 
-      {/* THỐNG KÊ */}
-      <div className="grid grid-cols-3 gap-4">
+      {/* WALLET STATS */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         <StatCard
-          label="Số dư ví"
-          value={`${balance.toLocaleString()}₫`}
-          color="bg-green-500"
+          label="Số dư hiện tại"
+          value={`${balance.toLocaleString()} ₫`}
+          color="from-green-500 to-emerald-600"
         />
         <StatCard
-          label="Tổng nạp"
-          value={`${transactions
-            .filter((t) => t.type === "DEPOSIT")
-            .reduce((s, t) => s + t.amount, 0)
-            .toLocaleString()}₫`}
-        />
-        <StatCard
-          label="Tổng chi"
+          label="Tổng chi tiêu"
           value={`${transactions
             .filter((t) => t.type === "PAYMENT")
             .reduce((s, t) => s + t.amount, 0)
-            .toLocaleString()}₫`}
-          color="bg-red-500"
+            .toLocaleString()} ₫`}
+          color="from-red-500 to-pink-600"
         />
       </div>
 
-      {/* GIAO DỊCH */}
-      <div className="bg-white rounded-lg shadow p-6">
+      {/* DEPOSIT */}
+      <div className="bg-white rounded-2xl shadow p-6 flex flex-col md:flex-row gap-4 items-center justify-between">
+        <div>
+          <h3 className="font-semibold text-lg">💰 Nạp tiền vào ví</h3>
+          <p className="text-sm text-gray-500">
+            Số tiền tối thiểu: 10.000₫
+          </p>
+        </div>
+
+        <div className="flex gap-3">
+          <input
+            type="number"
+            placeholder="Nhập số tiền"
+            value={depositAmount}
+            onChange={(e) => setDepositAmount(e.target.value)}
+            disabled={waitingPayment}
+            className="border rounded-lg px-4 py-2 w-52 focus:outline-none focus:ring-2 focus:ring-green-500"
+          />
+          <button
+            onClick={handleDeposit}
+            disabled={depositLoading || waitingPayment}
+            className="bg-green-600 hover:bg-green-700 text-white px-6 py-2 rounded-lg font-medium disabled:opacity-50 transition"
+          >
+            {depositLoading
+              ? "Đang xử lý..."
+              : waitingPayment
+              ? "Đang chờ thanh toán..."
+              : "Nạp tiền"}
+          </button>
+        </div>
+      </div>
+
+      {/* TRANSACTIONS */}
+      <div className="bg-white rounded-2xl shadow p-6">
         <h2 className="text-xl font-bold mb-4">💳 Giao dịch gần đây</h2>
 
         {transactions.length === 0 ? (
-          <p className="text-gray-500 text-center">Chưa có giao dịch</p>
+          <p className="text-center text-gray-500">
+            Chưa có giao dịch nào
+          </p>
         ) : (
           <div className="space-y-3">
             {transactions.map((tx, idx) => (
               <div
                 key={idx}
-                className="flex justify-between items-center bg-gray-50 p-3 rounded"
+                className="flex justify-between items-center bg-gray-50 hover:bg-gray-100 transition p-4 rounded-xl"
               >
                 <div>
                   <p className="font-semibold">
                     {tx.type === "DEPOSIT" && "📥 Nạp tiền"}
-                    {tx.type === "WITHDRAW" && "📤 Rút tiền"}
                     {tx.type === "PAYMENT" && "💸 Thanh toán"}
+                    {tx.type === "WITHDRAW" && "📤 Rút tiền"}
                   </p>
-                  <p className="text-sm text-gray-500">
+                  <p className="text-xs text-gray-500">
                     {new Date(tx.transactionDate).toLocaleString()}
                   </p>
                 </div>
@@ -223,12 +218,14 @@ export default function TradersOverview() {
   );
 }
 
-/* =================== CARD =================== */
-function StatCard({ label, value, color = "bg-blue-500" }) {
+/* ================= CARD ================= */
+function StatCard({ label, value, color }) {
   return (
-    <div className={`${color} p-6 rounded text-white`}>
-      <p className="text-sm">{label}</p>
-      <p className="text-3xl font-bold">{value}</p>
+    <div
+      className={`bg-gradient-to-r ${color} p-6 rounded-2xl text-white shadow`}
+    >
+      <p className="text-sm opacity-90">{label}</p>
+      <p className="text-3xl font-bold mt-2">{value}</p>
     </div>
   );
 }
@@ -236,5 +233,5 @@ function StatCard({ label, value, color = "bg-blue-500" }) {
 StatCard.propTypes = {
   label: PropTypes.string.isRequired,
   value: PropTypes.string.isRequired,
-  color: PropTypes.string,
+  color: PropTypes.string.isRequired,
 };
