@@ -1,4 +1,4 @@
-import { Routes, Route } from "react-router-dom";
+import { Routes, Route, Navigate  } from "react-router-dom";
 
 import { ProtectedRoute } from "./components/ProtectedRoute";
 import UserLayout from "./layouts/UserLayout";
@@ -27,17 +27,19 @@ import MapDirection from "./pages/user/MapDirection";
 import RecyclerDemands from "./pages/user/RecyclerDemands";
 import BlogAdmin from "./pages/admin/BlogAdmin";
 import BlogDetail from "./pages/user/BlogDetail";
+import WalletSuccess from "./pages/traders/WalletSuccess";
 function App() {
   return  (
     <Routes>
       {/* Layout dành cho user */}
       <Route path="/" element={<UserLayout />}>
+       <Route index element={<Navigate to="trang-chu" replace />} />
         <Route path="trang-chu" element={<Home />} />
         <Route path="about" element={<About />} />
         <Route path="wastelistings" element={<WasteListings />} />
         <Route path="create-collection" element={<CreateOrder />} />       
         <Route path="blog" element={<Blog />} />
-        <Route path="/blog/:id" element={<BlogDetail />} />
+        <Route path="blog/:id" element={<BlogDetail />} />
         <Route path="policy" element={<Policy />} />
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
@@ -58,9 +60,10 @@ function App() {
         <Route path="quanly" element={<h2>Quản lý</h2>} />
         <Route path="caidat" element={<h2>Cài đặt</h2>} />
       </Route>
-
+      <Route path="/wallet/success" element={<WalletSuccess />} />
       {/* Traders layout - Protected by role */}
       <Route
+      
         path="/traders"
         element={
           <ProtectedRoute requiredRole="ROLE_TRADERS">

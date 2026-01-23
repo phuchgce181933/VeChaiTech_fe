@@ -3,47 +3,47 @@ import axios from "axios";
 import { AuthContext } from "../../context/AuthContext";
 
 export default function TradersAccepted() {
-    const [orders, setOrders] = useState([]);
-    const [adminLocation, setAdminLocation] = useState(null);
-
     const { user } = useContext(AuthContext);
     const token = localStorage.getItem("token");
 
-    // 📍 Lấy vị trí admin
+    const [orders, setOrders] = useState([]);
+    const [adminLocation, setAdminLocation] = useState(null);
+
+    // ===== FILTER =====
+    const [filter, setFilter] = useState("ALL");
+
+    // ===== CANCEL STATES =====
+    const [showCancelModal, setShowCancelModal] = useState(false);
+    const [selectedOrderId, setSelectedOrderId] = useState(null);
+    const [cancelReason, setCancelReason] = useState("");
+    const [cancelFile, setCancelFile] = useState(null);
+    const [cancelLoading, setCancelLoading] = useState(false);
+
+    // 📍 Lấy vị trí recycler
     useEffect(() => {
-        if (navigator.geolocation) {
-            navigator.geolocation.getCurrentPosition(
-                (position) => {
-                    setAdminLocation({
-                        latitude: position.coords.latitude,
-                        longitude: position.coords.longitude,
-                    });
-                },
-                (error) => console.error("Lỗi lấy vị trí admin:", error)
-            );
-        }
+        navigator.geolocation?.getCurrentPosition(
+            (pos) =>
+                setAdminLocation({
+                    latitude: pos.coords.latitude,
+                    longitude: pos.coords.longitude,
+                }),
+            () => {}
+        );
     }, []);
 
-    // 📦 Lấy đơn hàng đã nhận
+    // 📦 Lấy đơn đã nhận
     useEffect(() => {
-        const fetchOrders = async () => {
-            try {
-                const response = await axios.get(
-                    `http://localhost:8080/api/v1/orders/recycler/${user.id}`,
-                    {
-                        headers: { Authorization: `Bearer ${token}` },
-                    }
-                );
-                setOrders(response.data.data || []);
-            } catch (error) {
-                console.error("Lỗi tải đơn đã nhận", error);
-            }
-        };
+        if (!user?.id) return;
 
-        if (user?.id) fetchOrders();
+        axios
+            .get(`http://localhost:8080/api/v1/orders/recycler/${user.id}`, {
+                headers: { Authorization: `Bearer ${token}` },
+            })
+            .then((res) => setOrders(res.data.data || []))
+            .catch((err) => console.error(err));
     }, [user, token]);
 
-    // 🌍 Công thức Haversine
+    // 🌍 Haversine
     const calculateDistance = (lat1, lon1, lat2, lon2) => {
         const R = 6371;
         const dLat = ((lat2 - lat1) * Math.PI) / 180;
@@ -53,125 +53,220 @@ export default function TradersAccepted() {
             Math.cos((lat1 * Math.PI) / 180) *
             Math.cos((lat2 * Math.PI) / 180) *
             Math.sin(dLon / 2) ** 2;
-        const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-        return R * c;
+        return R * (2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a)));
     };
 
-    // ⚠️ Kiểm tra khoảng cách order
     const getDistanceWarning = (order) => {
-        if (!adminLocation || !order.latitude || !order.longitude) return null;
-
-        const distance = calculateDistance(
+        if (!adminLocation) return null;
+        const d = calculateDistance(
             adminLocation.latitude,
             adminLocation.longitude,
-            parseFloat(order.latitude),
-            parseFloat(order.longitude)
+            order.latitude,
+            order.longitude
         );
-
-        return {
-            distance: distance.toFixed(2),
-            warning: distance > 5,
-        };
+        return { distance: d.toFixed(2), warning: d > 5 };
     };
 
-    // 🚀 Gọi API cập nhật trạng thái
-    const updateOrderStatus = async (orderId, newStatus) => {
+    // ===== OPEN CANCEL =====
+    const openCancelModal = (orderId) => {
+        setSelectedOrderId(orderId);
+        setCancelReason("");
+        setCancelFile(null);
+        setShowCancelModal(true);
+    };
+
+    // ===== CANCEL ORDER =====
+    const cancelOrder = async () => {
+        if (!cancelReason || !cancelFile) {
+            alert("Vui lòng nhập lý do và chọn ảnh/video");
+            return;
+        }
+
         try {
-            await axios.patch(
-                `http://localhost:8080/api/v1/orders/${orderId}/status?status=${newStatus}`,
-                {},
-                {
-                    headers: {
-                        "Content-Type": "application/json",
-                        Authorization: `Bearer ${token}`,
-                    },
-                }
+            setCancelLoading(true);
+
+            const formData = new FormData();
+            formData.append("file", cancelFile);
+            formData.append("reason", cancelReason);
+            formData.append("userId", user.id);
+
+            await axios.post(
+                `http://localhost:8080/api/v1/orders/${selectedOrderId}/cancel`,
+                formData,
+                { headers: { Authorization: `Bearer ${token}` } }
             );
 
-            // Update state
             setOrders((prev) =>
                 prev.map((o) =>
-                    o.id === orderId ? { ...o, status: newStatus } : o
+                    o.id === selectedOrderId
+                        ? { ...o, status: "CANCELLED" }
+                        : o
                 )
             );
 
-        } catch (error) {
-            console.error("Lỗi cập nhật trạng thái", error);
-            alert("Cập nhật thất bại!");
+            setShowCancelModal(false);
+        } catch {
+            alert("Hủy đơn thất bại");
+        } finally {
+            setCancelLoading(false);
         }
     };
 
+    // ===== COMPLETE ORDER =====
+    const completeOrder = async (orderId) => {
+        try {
+            await axios.patch(
+                `http://localhost:8080/api/v1/orders/${orderId}/status?status=COMPLETED`,
+                {},
+                { headers: { Authorization: `Bearer ${token}` } }
+            );
+
+            setOrders((prev) =>
+                prev.map((o) =>
+                    o.id === orderId ? { ...o, status: "COMPLETED" } : o
+                )
+            );
+        } catch {
+            alert("Hoàn thành thất bại");
+        }
+    };
+
+    // ===== FILTER ORDERS =====
+    const filteredOrders =
+        filter === "ALL"
+            ? orders
+            : orders.filter((o) => o.status === filter);
+
     return (
         <div className="space-y-6">
-            <h1 className="text-3xl font-bold text-gray-800">🔄 Đơn hàng đã nhận</h1>
+            <h1 className="text-3xl font-bold">🔄 Đơn hàng đã nhận</h1>
 
-            {orders.length === 0 ? (
-                <div className="bg-white rounded-lg shadow p-12 text-center">
-                    <p className="text-4xl mb-4">📭</p>
-                    <p className="text-gray-600 text-lg">Bạn chưa nhận đơn hàng nào</p>
+            {/* ===== FILTER BUTTONS ===== */}
+            <div className="flex gap-2">
+                {["ALL", "CLAIMED", "CANCELLED"].map((f) => (
+                    <button
+                        key={f}
+                        onClick={() => setFilter(f)}
+                        className={`px-4 py-2 rounded-lg text-sm font-medium ${
+                            filter === f
+                                ? "bg-blue-600 text-white"
+                                : "bg-gray-200 hover:bg-gray-300"
+                        }`}
+                    >
+                        {f}
+                    </button>
+                ))}
+            </div>
+
+            {filteredOrders.length === 0 ? (
+                <div className="bg-white shadow p-10 text-center">
+                    📭 Không có đơn
                 </div>
             ) : (
-                <div className="grid grid-cols-1 gap-4">
-                    {orders.map((order) => {
-                        const distanceInfo = getDistanceWarning(order);
+                <div className="grid gap-4">
+                    {filteredOrders.map((order) => {
+                        const d = getDistanceWarning(order);
 
                         return (
                             <div
                                 key={order.id}
                                 className="bg-white shadow rounded-lg p-4 space-y-2"
                             >
-                                {distanceInfo && distanceInfo.warning ? (
-                                    <div className="p-3 bg-orange-100 border border-orange-400 text-orange-800 rounded-md text-sm">
-                                        ⚠️ CẢNH BÁO: Khoảng cách hệ thống tính {distanceInfo.distance} km — coi chừng cook!
+                                {d && (
+                                    <div
+                                        className={`p-2 text-sm rounded ${
+                                            d.warning
+                                                ? "bg-orange-100 text-orange-800"
+                                                : "bg-green-100 text-green-800"
+                                        }`}
+                                    >
+                                        {d.warning
+                                            ? `⚠️ ${d.distance} km`
+                                            : `✅ ${d.distance} km`}
                                     </div>
-                                ) : distanceInfo ? (
-                                    <div className="p-3 bg-green-100 border border-green-400 text-green-800 rounded-md text-sm">
-                                        ✅ Khoảng cách hợp lý: {distanceInfo.distance} km
-                                    </div>
-                                ) : null}
+                                )}
 
-                                <p className="font-semibold">📌 Mã đơn: {order.id}</p>
-                                <p>👤 Khách: {order.customerName}</p>
-                                <p>📍 Địa chỉ: {order.addressFull}</p>
-                                <p>♻️ Loại rác: {order.wasteListingName}</p>
-                                <p>📞 SĐT: {order.customerPhone}</p>
+                                <p>📌 Mã đơn: {order.id}</p>
+                                <p>👤 {order.customerName}</p>
+                                <p>📍 {order.addressFull}</p>
+                                <p>♻️ {order.wasteListingName}</p>
 
-                                <span className="text-green-600 font-semibold">
+                                <span className="font-semibold">
                                     {order.status}
                                 </span>
 
-                                <div className="mt-3 space-x-2">
-                                    <button
-                                        onClick={() =>
-                                            window.open(
-                                                `https://www.google.com/maps/dir/?api=1&destination=${order.latitude},${order.longitude}`,
-                                                "_blank"
-                                            )
-                                        }
-                                        className="px-3 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-sm font-medium"
-                                    >
-                                        🗺️ Dẫn đường
-                                    </button>
-
-                                    <button
-                                        onClick={() => updateOrderStatus(order.id, "COMPLETED")}
-                                        className="px-3 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg text-sm font-medium"
-                                        disabled={order.status === "COMPLETED"}
-                                    >
-                                        ✔️ Hoàn thành
-                                    </button>
-
-                                    <button
-                                        onClick={() => updateOrderStatus(order.id, "CANCELLED")}
-                                        className="px-3 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg text-sm font-medium"
-                                        disabled={order.status === "CANCELLED"}
-                                    >
-                                        ❌ Hủy
-                                    </button>
+                                {/* ===== ACTION BUTTONS ===== */}
+                                <div className="flex gap-2 mt-3">
+                                    {order.status === "CLAIMED" && (
+                                        <>
+                                            <button
+                                                onClick={() =>
+                                                    completeOrder(order.id)
+                                                }
+                                                className="px-3 py-2 bg-green-600 text-white rounded-lg"
+                                            >
+                                                ✔️ Hoàn thành
+                                            </button>
+                                            <button
+                                                onClick={() =>
+                                                    openCancelModal(order.id)
+                                                }
+                                                className="px-3 py-2 bg-red-600 text-white rounded-lg"
+                                            >
+                                                ❌ Hủy
+                                            </button>
+                                        </>
+                                    )}
                                 </div>
                             </div>
                         );
                     })}
+                </div>
+            )}
+
+            {/* ===== CANCEL MODAL ===== */}
+            {showCancelModal && (
+                <div className="fixed inset-0 bg-black/40 flex items-center justify-center">
+                    <div className="bg-white p-6 rounded-lg w-full max-w-md">
+                        <h2 className="text-xl font-bold text-red-600 mb-4">
+                            Hủy đơn
+                        </h2>
+
+                        <textarea
+                            value={cancelReason}
+                            onChange={(e) =>
+                                setCancelReason(e.target.value)
+                            }
+                            placeholder="Lý do hủy..."
+                            className="w-full border rounded p-3 mb-3"
+                        />
+
+                        <input
+                            type="file"
+                            accept="image/*,video/*"
+                            onChange={(e) =>
+                                setCancelFile(e.target.files[0])
+                            }
+                        />
+
+                        <div className="flex justify-end gap-2 mt-4">
+                            <button
+                                onClick={() => setShowCancelModal(false)}
+                                className="px-4 py-2 bg-gray-200 rounded"
+                            >
+                                Đóng
+                            </button>
+                            <button
+                                onClick={cancelOrder}
+                                disabled={cancelLoading}
+                                className="px-4 py-2 bg-red-500 text-white rounded"
+                            >
+                                {cancelLoading
+                                    ? "Đang hủy..."
+                                    : "Xác nhận"}
+                            </button>
+                        </div>
+                    </div>
                 </div>
             )}
         </div>

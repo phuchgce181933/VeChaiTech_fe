@@ -34,8 +34,8 @@ export default function UserLayout() {
     <div className="border-[#66BB6A] text-gray-800">
       {/* Header cố định */}
       <header
-        className={`backdrop-blur-md bg-white/40 border-[#66BB6A] px-8 py-3 
-  flex items-center border border-white/30 shadow-lg fixed top-4 left-1/2 
+        className={`backdrop-blur-md bg-red/40 border-[#66BB6A] px-8 py-3 
+  flex items-center border border-red/300 shadow-lg fixed top-4 left-1/2 
   -translate-x-1/2 w-[90%] md:w-[80%] rounded-full z-50 transition-transform 
   duration-300 ${hideNav ? "-translate-y-[150%]" : "translate-y-0"}`}
       >

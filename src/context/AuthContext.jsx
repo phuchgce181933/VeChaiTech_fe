@@ -8,17 +8,21 @@ export function AuthProvider({ children }) {
   const [isLoading, setIsLoading] = useState(true); // Tracking khi user đang load
 
   const login = (userData, token, roles) => {
-    const expirationTime = Date.now() + 5 * 60 * 100000; // 5 phút
+    const expirationTime = Date.now() + 5 * 60 * 1000; // ✅ 5 phút
+
     const userWithRole = {
       ...userData,
-      role: roles && roles.length > 0 ? roles[0] : null, // Lưu role chính
-      roles: roles, // Lưu danh sách roles
+      token, // ✅ GẮN TOKEN VÀO USER
+      role: roles && roles.length > 0 ? roles[0] : null,
+      roles,
     };
+
     localStorage.setItem("user", JSON.stringify(userWithRole));
-    localStorage.setItem("token", token);
     localStorage.setItem("expiration", expirationTime);
+
     setUser(userWithRole);
   };
+
 
   const logout = () => {
     localStorage.removeItem("user");
@@ -32,10 +36,13 @@ export function AuthProvider({ children }) {
     const expiration = localStorage.getItem("expiration");
 
     if (storedUser && expiration) {
-      if (Date.now() < parseInt(expiration, 10)) {
-        setUser(JSON.parse(storedUser));
+      const parsedUser = JSON.parse(storedUser);
 
-        // Tự động logout khi hết hạn
+      if (Date.now() < parseInt(expiration, 10)) {
+        setUser(parsedUser);
+
+        console.log(parsedUser.token); // ✅ LOG SAU KHI CÓ USER
+
         const timeout = setTimeout(() => {
           logout();
         }, parseInt(expiration, 10) - Date.now());
@@ -46,8 +53,10 @@ export function AuthProvider({ children }) {
         logout();
       }
     }
+
     setIsLoading(false);
   }, []);
+
 
   return (
     <AuthContext.Provider value={{ user, login, logout, isLoading }}>

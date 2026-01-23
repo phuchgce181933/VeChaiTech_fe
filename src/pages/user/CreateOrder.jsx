@@ -100,7 +100,12 @@ export default function CreateOrder() {
       }
 
       await response.json();
-      setSuccess("✅ Đặt hàng thành công!");
+      setSuccess(
+        "🎉 Đặt đơn hàng thành công!\n\n" +
+        "Cảm ơn bạn đã tin tưởng và sử dụng dịch vụ của chúng tôi.\n" +
+        "Đơn hàng của bạn đã được tiếp nhận và đang được hệ thống xử lý.\n" +
+        "Chúng tôi sẽ liên hệ với bạn trong thời gian sớm nhất, tối đa trong vòng 24 giờ để xác nhận và thu gom."
+      );
       setFormData({
         customerId: 0,
         wasteListingId: 0,
@@ -109,10 +114,6 @@ export default function CreateOrder() {
         longitude: "",
         addressFull: "",
       });
-
-      setTimeout(() => {
-        navigate("/wastelistings");
-      }, 2000);
     } catch (err) {
       console.error("Lỗi khi tạo đơn hàng:", err);
       setError(`❌ ${err.message || "Có lỗi xảy ra. Vui lòng thử lại!"}`);
@@ -139,8 +140,29 @@ export default function CreateOrder() {
           )}
 
           {success && (
-            <div className="mb-6 p-4 bg-green-100 border border-green-400 text-green-700 rounded-lg">
-              {success}
+            <div className="mb-8 p-6 bg-green-50 border border-green-300 text-green-800 rounded-xl shadow-sm">
+              <h3 className="text-xl font-bold mb-3">🎉 Đặt đơn hàng thành công!</h3>
+
+              <p className="mb-2">
+                Cảm ơn bạn đã tin tưởng và sử dụng dịch vụ của chúng tôi.
+              </p>
+
+              <p className="mb-2">
+                Đơn hàng của bạn đã được <strong>tiếp nhận</strong> và đang được
+                <strong> hệ thống xử lý</strong>.
+              </p>
+
+              <p className="mb-4">
+                Chúng tôi cam kết sẽ <strong>liên hệ với bạn trong thời gian sớm nhất,
+                  tối đa trong vòng 24 giờ</strong> để xác nhận và tiến hành thu gom.
+              </p>
+
+              <button
+                onClick={() => navigate("/trang-chu")}
+                className="mt-2 px-6 py-3 bg-gradient-to-r from-[#2E7D32] to-[#66BB6A] text-white font-semibold rounded-lg hover:scale-105 transition-all"
+              >
+                🏠 Quay về trang chủ
+              </button>
             </div>
           )}
 
@@ -264,7 +286,7 @@ export default function CreateOrder() {
             <div className="flex gap-4 pt-6">
               <button
                 type="button"
-                onClick={() => navigate("/wastelistings")}
+                onClick={() => navigate("/trang-chu")}
                 className="flex-1 px-6 py-3 bg-gray-300 text-gray-800 font-semibold rounded-lg hover:bg-gray-400 transition-all"
               >
                 Hủy
