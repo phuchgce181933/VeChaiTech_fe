@@ -144,9 +144,12 @@ export default function TradersOverview() {
       {/* DEPOSIT */}
       <div className="bg-white rounded-2xl shadow p-6 flex flex-col md:flex-row gap-4 items-center justify-between">
         <div>
-          <h3 className="font-semibold text-lg">💰 Nạp tiền vào ví</h3>
+          <h3 className="font-semibold text-lg">Nạp tiền vào ví</h3>
           <p className="text-sm text-gray-500">
             Số tiền tối thiểu: 10.000₫
+          </p>
+           <p className="text-sm text-red-500">
+            Tính năng đang được phát triển, nếu có trục trặc vui lòng liên hệ qua số 0905087335 hoặc gửi gmail ở trang chủ để được hỗ trợ sớm nhất.
           </p>
         </div>
 

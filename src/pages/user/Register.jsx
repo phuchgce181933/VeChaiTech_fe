@@ -73,8 +73,8 @@ const Register = () => {
   };
 
   return (
-    <div style={styles.container}>
-      <div className="w-full max-w-5xl bg-gradient-to-br from-teal-50 to-emerald-50 rounded-xl shadow-[0_4px_12px_rgba(0,0,0,0.08)] border border-emerald-200 p-8 flex flex-col md:flex-row gap-8">
+    <div className="relative min-h-screen flex items-center justify-center from-[#aff0b5] via-[#b2e0b6] to-[#17e11e]">
+      <div className="w-full max-w-3xl bg-gradient-to-br from-[#aff0b5] via-[#b2e0b6] to-[#17e11e] rounded-xl shadow-[0_4px_12px_rgba(0,0,0,0.08)] border p-8 flex flex-col md:flex-row gap-8">
         {/* Cột trái: Giới thiệu */}
         <div className="flex-1 flex flex-col justify-start">
           <h2 className="text-2xl font-bold text-green-700 mb-4">

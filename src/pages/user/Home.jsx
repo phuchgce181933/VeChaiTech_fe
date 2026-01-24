@@ -27,7 +27,7 @@ export default function About() {
       {/* ================= MAP ================= */}
       <section className="mt-20 px-4 md:px-6 relative">
         <div className="text-center mb-10">
-          <h3 className="text-3xl md:text-5xl font-extrabold bg-clip-text text-transparent bg-gradient-to-r  text-emerald-800">
+          <h3 className="text-5xl font-bold text-center text-emerald-800 mb-1">
             Tìm điểm thu gom gần bạn
           </h3>
           <p className="text-gray-600 mt-3 max-w-2xl mx-auto">
