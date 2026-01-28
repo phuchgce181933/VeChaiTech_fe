@@ -1,149 +1,302 @@
 import { Outlet, Link, useNavigate, useLocation } from "react-router-dom";
 import { useContext, useEffect, useState } from "react";
 import { AuthContext } from "../context/AuthContext";
-import { AnimatePresence, motion } from "framer-motion";
 
 export default function UserLayout() {
   const { user, logout } = useContext(AuthContext);
   const navigate = useNavigate();
   const location = useLocation();
-  const [hideNav, setHideNav] = useState(false);
 
-  /* ===== Hide header on scroll ===== */
+  const [hideNav, setHideNav] = useState(false);
+  const [isMobile, setIsMobile] = useState(false);
+  const [openMenu, setOpenMenu] = useState(false);
+
+  /* ===== DETECT MOBILE ===== */
   useEffect(() => {
-    let lastScroll = 0;
-    const handleScroll = () => {
-      const current = window.scrollY;
-      setHideNav(current > lastScroll && current > 80);
-      lastScroll = current;
-    };
-    window.addEventListener("scroll", handleScroll);
-    return () => window.removeEventListener("scroll", handleScroll);
+    const check = () => setIsMobile(window.innerWidth < 768);
+    check();
+    window.addEventListener("resize", check);
+    return () => window.removeEventListener("resize", check);
   }, []);
 
-  /* ===== Scroll to top when change page ===== */
+  /* ===== HIDE HEADER ON SCROLL (DESKTOP ONLY) ===== */
   useEffect(() => {
-    window.scrollTo({ top: 0, behavior: "smooth" });
-  }, [location.pathname]);
+    if (isMobile) return;
+
+    let lastScroll = 0;
+    const onScroll = () => {
+      const current = window.scrollY;
+      setHideNav(current > lastScroll && current > 120);
+      lastScroll = current;
+    };
+
+    window.addEventListener("scroll", onScroll);
+    return () => window.removeEventListener("scroll", onScroll);
+  }, [isMobile]);
 
   const handleLogout = () => {
     logout();
     navigate("/login");
+    setOpenMenu(false);
   };
 
-  return (
-    <div className="min-h-screen flex flex-col
-      bg-gradient-to-b from-[#aff0b5] via-[#b2e0b6] to-[#17e11e]">
+  const isActive = (path) => location.pathname === path;
 
+  return (
+    <div className="bg-white text-gray-900">
       {/* ================= HEADER ================= */}
       <header
         className={`
-          fixed top-4 left-1/2 -translate-x-1/2 z-50
-          w-[92%] md:w-[85%]
-          px-8 py-3 flex items-center
-          backdrop-blur-xl bg-white/70
-          border border-emerald-200
-          rounded-full shadow-lg
+          fixed top-0 left-0 right-0 z-50
+          h-14 md:h-20
+          bg-white border-b border-gray-200
           transition-transform duration-300
-          ${hideNav ? "-translate-y-[150%]" : "translate-y-0"}
+          ${hideNav ? "-translate-y-full" : "translate-y-0"}
         `}
+        style={{ paddingTop: "env(safe-area-inset-top)" }}
       >
-        <Link to="/trang-chu" className="flex items-center gap-3">
-          <img
-            src="https://res.cloudinary.com/dcg5wftdq/image/upload/v1760774533/xpknvzz5hfelc4c3qaqc.png"
-            alt="VeChaiTech"
-            className="w-9 h-9"
-          />
-        </Link>
-
-        <nav className="flex-grow flex justify-center items-center gap-8 text-sm font-medium">
-          <Link className="hover:text-emerald-600 transition" to="/about">
-            Về chúng tôi
-          </Link>
-          <Link className="hover:text-emerald-600 transition" to="/blog">
-            Tin tức
-          </Link>
-
-          <Link to="/trang-chu">
-            <h1 className="text-2xl font-extrabold bg-clip-text text-transparent
-              bg-gradient-to-r from-green-600 via-teal-500 to-sky-500">
+        <div className="max-w-7xl mx-auto px-4 md:px-8 h-full flex items-center justify-between">
+          {/* LOGO */}
+          <Link to="/trang-chu" className="flex items-center gap-2">
+            <img
+              src="https://res.cloudinary.com/dcg5wftdq/image/upload/v1760774533/xpknvzz5hfelc4c3qaqc.png"
+              alt="VeChaiTech"
+              className="w-6 h-6"
+            />
+            <span className="font-bold text-sm md:text-lg">
               VeChaiTech
-            </h1>
+            </span>
           </Link>
 
-          <Link className="hover:text-emerald-600 transition" to="/policy">
-            Đối tác
-          </Link>
-          <Link className="hover:text-emerald-600 transition" to="/chatbot">
-             Chat
-          </Link>
-        </nav>
-
-        <div className="flex items-center gap-3">
-          {user ? (
-            <>
-              <span className="hidden sm:block text-sm">
-                Xin chào, <b>{user.fullName}</b>
-              </span>
-
+          {/* DESKTOP NAV */}
+          <nav className="hidden md:flex items-center gap-10 text-sm font-medium">
+            {[
+              ["Trang chủ", "/trang-chu"],
+              ["Về chúng tôi", "/about"],
+              ["Tin tức", "/blog"],
+              ["Đối tác", "/policy"],
+              ["Chat", "/chatbot"],
+            ].map(([label, path]) => (
               <Link
-                to="/profile"
-                className="px-4 py-1.5 rounded-full border border-emerald-400
-                text-emerald-700 bg-white/80 hover:bg-emerald-50 text-sm transition"
+                key={path}
+                to={path}
+                className={
+                  isActive(path)
+                    ? "text-emerald-600 underline underline-offset-8"
+                    : "text-gray-700 hover:text-black"
+                }
               >
-                Hồ sơ
+                {label}
               </Link>
+            ))}
+          </nav>
 
-              <button
-                onClick={handleLogout}
-                className="px-4 py-1.5 rounded-full
-                bg-gradient-to-r from-red-500 to-red-600
-                text-white text-sm shadow hover:opacity-90 transition"
-              >
-                Logout
-              </button>
-            </>
-          ) : (
-            <>
-              <Link className="btn-outline" to="/login">Đăng nhập</Link>
-              <Link className="btn-primary" to="/register">Đăng ký</Link>
-            </>
-          )}
+          {/* DESKTOP ACTIONS */}
+          <div className="hidden md:flex items-center gap-4 text-sm">
+            {user ? (
+              <>
+                <span>
+                  Xin chào, <b>{user.fullName}</b>
+                </span>
+                <Link
+                  to="/profile"
+                  className="px-4 py-2 border border-black font-semibold hover:bg-black hover:text-white transition"
+                >
+                  Hồ sơ
+                </Link>
+                <button
+                  onClick={handleLogout}
+                  className="px-4 py-2 bg-black text-white font-semibold"
+                >
+                  Logout
+                </button>
+              </>
+            ) : (
+              <>
+                <Link to="/login">Đăng nhập</Link>
+                <Link
+                  to="/register"
+                  className="px-4 py-2 bg-black text-white font-semibold"
+                >
+                  Đăng ký
+                </Link>
+              </>
+            )}
+          </div>
+
+          {/* MOBILE MENU BUTTON */}
+          <button
+            className="md:hidden p-2"
+            onClick={() => setOpenMenu(true)}
+            aria-label="Open menu"
+          >
+            ☰
+          </button>
         </div>
       </header>
 
-      {/* ================= MAIN (ANIMATION HERE) ================= */}
-      <main className="flex-1 pt-24 px-4 md:px-10 overflow-hidden">
-        <AnimatePresence mode="wait">
-          <motion.div
-            key={location.pathname}
-            initial={{ x: 80, opacity: 1 }}
-            animate={{ x: 0, opacity: 1 }}
-            exit={{ x: -80, opacity: 0 }}
-            transition={{
-              duration: 0.5,
-              type: "spring",
-              stiffness: 100,
-              damping: 20,
-              // ease: [0.16, 1, 0.3, 1], // mượt, không gắt
-            }}
+      {/* ================= MOBILE DRAWER ================= */}
+      {openMenu && (
+        <div
+          className="fixed inset-0 z-50 bg-black/40"
+          onClick={() => setOpenMenu(false)}
+        >
+          <div
+            className="absolute top-0 right-0 w-64 h-full bg-white p-6"
+            onClick={(e) => e.stopPropagation()}
           >
-            <Outlet />
-          </motion.div>
+            <button
+              className="mb-6 text-lg"
+              onClick={() => setOpenMenu(false)}
+            >
+              ✕
+            </button>
 
-        </AnimatePresence>
+            {/* USER INFO */}
+            {user && (
+              <div className="mb-4 border-b pb-4">
+                <p className="text-sm text-gray-600">
+                  Xin chào, <b>{user.fullName}</b>
+                </p>
+                <button
+                  onClick={handleLogout}
+                  className="mt-3 w-full text-left text-red-600"
+                >
+                  Đăng xuất
+                </button>
+              </div>
+            )}
+            {/* ================= MOBILE DRAWER ================= */}
+            {openMenu && (
+              <div
+                className="fixed inset-0 z-50 bg-black/40 backdrop-blur-sm"
+                onClick={() => setOpenMenu(false)}
+              >
+                <div
+                  className="absolute top-0 right-0 w-72 h-full bg-white p-6 rounded-l-2xl shadow-xl"
+                  onClick={(e) => e.stopPropagation()}
+                >
+                  {/* HEADER */}
+                  <div className="flex items-center justify-between mb-6">
+                    <h3 className="text-lg font-semibold">Menu</h3>
+                    <button
+                      className="text-xl text-gray-500"
+                      onClick={() => setOpenMenu(false)}
+                    >
+                      ✕
+                    </button>
+                  </div>
+
+                  {/* USER INFO */}
+                  {user && (
+                    <div className="mb-6 p-4 bg-gray-50 rounded-xl">
+                      <p className="text-sm text-gray-600">
+                        Xin chào
+                      </p>
+                      <p className="font-semibold text-gray-900">
+                        {user.fullName}
+                      </p>
+                      <button
+                        onClick={handleLogout}
+                        className="mt-3 text-sm text-red-600"
+                      >
+                        Đăng xuất
+                      </button>
+                    </div>
+                  )}
+
+                  {/* AUTH (NOT LOGGED IN) */}
+                  {!user && (
+                    <div className="mb-6 space-y-3">
+                      <Link
+                        to="/login"
+                        onClick={() => setOpenMenu(false)}
+                        className="block w-full py-2 text-center border border-gray-300 rounded-lg font-medium"
+                      >
+                        Đăng nhập
+                      </Link>
+
+                      <Link
+                        to="/register"
+                        onClick={() => setOpenMenu(false)}
+                        className="block w-full py-2 text-center bg-black text-white rounded-lg font-medium"
+                      >
+                        Đăng ký
+                      </Link>
+                    </div>
+                  )}
+
+                  {/* NAV */}
+                  <nav className="flex flex-col gap-2 text-base">
+                    {[
+                      ["Trang chủ", "/trang-chu"],
+                      ["Về chúng tôi", "/about"],
+                      ["Tin tức", "/blog"],
+                      ["Đối tác", "/policy"],
+                      ["Chat", "/chatbot"],
+                    ].map(([label, path]) => (
+                      <Link
+                        key={path}
+                        to={path}
+                        onClick={() => setOpenMenu(false)}
+                        className={`flex items-center gap-3 px-3 py-2 rounded-lg transition
+              ${isActive(path)
+                            ? "bg-emerald-50 text-emerald-700 font-semibold"
+                            : "text-gray-800 hover:bg-gray-100"
+                          }`}
+                      >
+                        <span className="w-2 h-2 rounded-full bg-gray-400" />
+                        {label}
+                      </Link>
+                    ))}
+                  </nav>
+                </div>
+              </div>
+            )}
+
+
+            {/* MOBILE NAV */}
+            <nav className="flex flex-col gap-4 text-base">
+              {[
+                ["Trang chủ", "/trang-chu"],
+                ["Về chúng tôi", "/about"],
+                ["Tin tức", "/blog"],
+                ["Đối tác", "/policy"],
+                ["Chat", "/chatbot"],
+              ].map(([label, path]) => (
+                <Link
+                  key={path}
+                  to={path}
+                  onClick={() => setOpenMenu(false)}
+                  className={
+                    isActive(path)
+                      ? "text-emerald-600 font-semibold"
+                      : "text-gray-800"
+                  }
+                >
+                  {label}
+                </Link>
+              ))}
+            </nav>
+          </div>
+        </div>
+      )}
+
+      {/* ================= MAIN ================= */}
+      <main className="pt-14 md:pt-20">
+        <Outlet />
       </main>
 
-
       {/* ================= FOOTER ================= */}
-      <footer className="bg-gray-900 text-gray-300 py-12">
-        <div className="max-w-7xl mx-auto px-6 grid md:grid-cols-3 gap-8">
+      <footer className="bg-gray-900 text-gray-300 py-10 md:py-16 mt-12">
+        <div className="max-w-7xl mx-auto px-6 grid gap-10 md:grid-cols-3">
           <div>
-            <h3 className="text-xl font-semibold text-white mb-3">
+            <h3 className="text-lg font-semibold text-white mb-3">
               VeChaiTech
             </h3>
             <p className="text-sm opacity-80">
-              Nền tảng tái chế thông minh kết nối cộng đồng.
+              Nền tảng tái chế thông minh, kết nối cộng đồng
+              và giao dịch bền vững.
             </p>
           </div>
 
@@ -155,16 +308,17 @@ export default function UserLayout() {
               <li><Link to="/blog">Tin tức</Link></li>
             </ul>
           </div>
+          {/* ngrok start --all */}
 
           <div>
             <h4 className="font-semibold text-white mb-3">Liên hệ</h4>
-            <p className="text-sm">Tân An, Thành Phố Cần Thơ</p>
+            <p className="text-sm">Tân An, TP. Cần Thơ</p>
             <p className="text-sm">📧 g5-se@vechaitech.vn</p>
           </div>
         </div>
 
         <p className="text-center text-xs text-gray-500 mt-8">
-          © {new Date().getFullYear()} VeChaiTech 🌱
+          © {new Date().getFullYear()} VeChaiTech
         </p>
       </footer>
     </div>

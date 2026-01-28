@@ -4,17 +4,17 @@ import {
   TileLayer,
   Marker,
   Popup,
-  useMap,
   Polyline,
+  useMap,
 } from "react-leaflet";
 import "leaflet/dist/leaflet.css";
 import L from "leaflet";
-import PropTypes from "prop-types";
+import axios from "axios";
 
+/* ================= ICON ================= */
 import iconUrl from "leaflet/dist/images/marker-icon.png";
 import iconShadowUrl from "leaflet/dist/images/marker-shadow.png";
 
-/* ================= ICON ================= */
 const defaultIcon = new L.Icon({
   iconUrl,
   shadowUrl: iconShadowUrl,
@@ -22,53 +22,68 @@ const defaultIcon = new L.Icon({
   iconAnchor: [12, 41],
 });
 
-/* ================= CHANGE MAP VIEW ================= */
-const ChangeMapView = ({ coords }) => {
-  const map = useMap();
-
-  useEffect(() => {
-    if (coords) {
-      map.setView(coords, 15, { animate: true });
-    }
-  }, [coords, map]);
-
-  return null;
+/* ================= UTILS ================= */
+const haversine = (lat1, lon1, lat2, lon2) => {
+  const R = 6371;
+  const dLat = ((lat2 - lat1) * Math.PI) / 180;
+  const dLon = ((lon2 - lon1) * Math.PI) / 180;
+  const a =
+    Math.sin(dLat / 2) ** 2 +
+    Math.cos((lat1 * Math.PI) / 180) *
+    Math.cos((lat2 * Math.PI) / 180) *
+    Math.sin(dLon / 2) ** 2;
+  return R * (2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a)));
 };
 
-ChangeMapView.propTypes = {
-  coords: PropTypes.array,
+/* ================= MAP FIX ================= */
+const FixMapResize = () => {
+  const map = useMap();
+  useEffect(() => {
+    setTimeout(() => map.invalidateSize(), 300);
+  }, [map]);
+  return null;
 };
 
 /* ================= MAIN ================= */
 export default function MapDirection() {
+  const API_BASE = import.meta.env.VITE_API_BASE_URL;
+  const ORS_KEY = import.meta.env.VITE_ORS_KEY;
+
   const [points, setPoints] = useState([]);
-  const [selectedCoords, setSelectedCoords] = useState(null);
   const [currentCoords, setCurrentCoords] = useState(null);
-  const [route, setRoute] = useState(null);
+  const [route, setRoute] = useState([]);
+  const [isMobile, setIsMobile] = useState(false);
   const [loading, setLoading] = useState(true);
 
   const watchIdRef = useRef(null);
-  const deniedRef = useRef(false);
+
+  /* ===== DETECT MOBILE ===== */
+  useEffect(() => {
+    const check = () => setIsMobile(window.innerWidth < 768);
+    check();
+    window.addEventListener("resize", check);
+    return () => window.removeEventListener("resize", check);
+  }, []);
 
   /* ===== FETCH POINTS ===== */
   useEffect(() => {
-    fetch("http://localhost:8080/api/v1/recycler-demands")
-      .then((res) => res.json())
-      .then((data) => {
-        setPoints(data);
-        setLoading(false);
+    axios
+      .get(`${API_BASE}/api/v1/recycler-demands`, {
+        headers: {
+          Accept: "application/json",
+          "ngrok-skip-browser-warning": "true",
+        },
       })
-      .catch(() => setLoading(false));
-  }, []);
-
-  /* ===== CLEANUP GPS ===== */
-  useEffect(() => {
-    return () => {
-      if (watchIdRef.current) {
-        navigator.geolocation.clearWatch(watchIdRef.current);
-      }
-    };
-  }, []);
+      .then((res) => {
+        const raw = Array.isArray(res.data)
+          ? res.data
+          : res.data?.data || [];
+        setPoints(
+          raw.filter((p) => p.latitude && p.longitude)
+        );
+      })
+      .finally(() => setLoading(false));
+  }, [API_BASE]);
 
   /* ===== GET MY LOCATION ===== */
   const handleGetMyLocation = () => {
@@ -77,125 +92,170 @@ export default function MapDirection() {
       return;
     }
 
-    if (watchIdRef.current) {
+    watchIdRef.current &&
       navigator.geolocation.clearWatch(watchIdRef.current);
-    }
 
     watchIdRef.current = navigator.geolocation.watchPosition(
       (pos) => {
-        setCurrentCoords([pos.coords.latitude, pos.coords.longitude]);
-        deniedRef.current = false;
+        setCurrentCoords([
+          pos.coords.latitude,
+          pos.coords.longitude,
+        ]);
       },
-      (err) => {
-        if (!deniedRef.current && err.code === 1) {
-          alert("Bạn đã từ chối quyền GPS. Hãy bật lại trong trình duyệt.");
-          deniedRef.current = true;
-        }
-      },
+      () => alert("Không lấy được vị trí"),
       { enableHighAccuracy: true }
     );
   };
 
-  /* ===== CREATE ROUTE ===== */
-  const handleCreateRoute = async (destination) => {
+  /* ===== CREATE ROUTE (DESKTOP) ===== */
+  const handleCreateRoute = async (dest) => {
     if (!currentCoords) {
-      alert("Vui lòng lấy vị trí của bạn trước.");
+      alert("Vui lòng lấy vị trí của bạn");
       return;
     }
 
-    try {
-      const apiKey = import.meta.env.VITE_ORS_KEY;
+    const url = `https://api.openrouteservice.org/v2/directions/driving-car?api_key=${ORS_KEY}&start=${currentCoords[1]},${currentCoords[0]}&end=${dest[1]},${dest[0]}`;
 
-      const url = `https://api.openrouteservice.org/v2/directions/driving-car?api_key=${apiKey}&start=${currentCoords[1]},${currentCoords[0]}&end=${destination[1]},${destination[0]}`;
-
-      const res = await fetch(url);
-      if (!res.ok) throw new Error("Route API failed");
-
-      const data = await res.json();
-      if (!data.features?.length) {
-        alert("Không tìm được đường đi");
-        return;
-      }
-
-      const coords = data.features[0].geometry.coordinates.map((c) => [
-        c[1],
-        c[0],
-      ]);
-
-      setRoute(coords);
-    } catch (err) {
-      console.error(err);
-      alert("Không thể tạo đường đi.");
-    }
+    const res = await axios.get(url);
+    const coords =
+      res.data.features[0].geometry.coordinates.map(
+        ([lng, lat]) => [lat, lng]
+      );
+    setRoute(coords);
   };
 
-  /* ===== LOADING ===== */
+  /* ===== OPEN GOOGLE MAPS (MOBILE) ===== */
+  const openGoogleMaps = (lat, lng) => {
+    window.open(
+      `https://www.google.com/maps/dir/?api=1&destination=${lat},${lng}`,
+      "_blank"
+    );
+  };
+
   if (loading) {
     return (
-      <div className="flex items-center justify-center h-[560px] bg-[#F4FBF7]">
+      <div className="flex justify-center py-20">
         <div className="w-10 h-10 border-4 border-emerald-600 border-t-transparent rounded-full animate-spin" />
       </div>
     );
   }
 
-  return (
-    <div className="flex gap-6 h-[560px]">
-      {/* ================= SIDEBAR ================= */}
-      <aside className="w-[320px] bg-white rounded-2xl shadow-lg p-4 flex flex-col">
-        <h2 className="text-xl font-bold text-emerald-700 text-center mb-4">
-          🗺️ Điểm thu gom
-        </h2>
-
+  /* ================= MOBILE ================= */
+  if (isMobile) {
+    return (
+      <div className="px-4 py-4 space-y-4">
+        {/* BUTTON GET LOCATION */}
         <button
           onClick={handleGetMyLocation}
-          className="mb-4 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-semibold transition"
+          className="w-full py-3 rounded-xl bg-emerald-600 text-white font-semibold"
         >
           📍 Lấy vị trí của tôi
         </button>
 
-        <div className="flex-1 overflow-y-auto space-y-3 pr-1">
-          {points.map((point) => {
-            const coords = [
-              parseFloat(point.latitude),
-              parseFloat(point.longitude),
-            ];
-
-            const isActive =
-              selectedCoords?.[0] === coords[0] &&
-              selectedCoords?.[1] === coords[1];
+        {/* HORIZONTAL SCROLL */}
+        <div
+          className="
+          flex gap-4 overflow-x-auto
+          pb-4 -mx-4 px-4
+          snap-x snap-mandatory
+          scrollbar-hide
+        "
+          style={{ WebkitOverflowScrolling: "touch" }}
+        >
+          {points.map((p) => {
+            const distance =
+              currentCoords &&
+              haversine(
+                currentCoords[0],
+                currentCoords[1],
+                p.latitude,
+                p.longitude
+              ).toFixed(2);
 
             return (
               <div
-                key={point.id}
-                onClick={() => setSelectedCoords(coords)}
-                className={`border rounded-xl p-3 cursor-pointer transition
-                  ${
-                    isActive
-                      ? "bg-emerald-100 border-emerald-400"
-                      : "bg-gray-50 hover:bg-emerald-50"
-                  }
-                `}
+                key={p.id}
+                className="
+                min-w-[85%]
+                snap-start
+                border rounded-2xl p-4
+                bg-white shadow
+                flex-shrink-0
+              "
               >
-                <h3 className="font-semibold text-emerald-700">
-                  {point.name}
+                <h3 className="font-bold text-emerald-700">
+                  {p.name}
                 </h3>
 
-                <p className="text-sm text-gray-600 line-clamp-2">
-                  {point.description}
+                <p className="text-sm text-gray-600 mt-1 line-clamp-2">
+                  {p.description}
                 </p>
 
-                <img
-                  src={point.imageUrl}
-                  alt={point.name}
-                  className="mt-2 w-full h-28 object-cover rounded-lg"
-                />
+                {distance && (
+                  <p className="mt-2 text-sm">
+                    📏 Cách bạn <b>{distance} km</b>
+                  </p>
+                )}
 
                 <button
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    handleCreateRoute(coords);
-                  }}
-                  className="mt-3 w-full py-2 rounded-lg bg-emerald-500 hover:bg-emerald-600 text-white text-sm font-medium transition"
+                  onClick={() =>
+                    openGoogleMaps(p.latitude, p.longitude)
+                  }
+                  className="mt-4 w-full py-2 rounded-lg bg-emerald-500 text-white"
+                >
+                  🧭 Mở Google Maps
+                </button>
+              </div>
+            );
+          })}
+        </div>
+      </div>
+    );
+  }
+
+
+  /* ================= DESKTOP ================= */
+  return (
+    <div className="flex gap-6 h-[560px]">
+      {/* SIDEBAR */}
+      <aside className="w-[320px] bg-white rounded-2xl shadow-lg p-4 flex flex-col">
+        <button
+          onClick={handleGetMyLocation}
+          className="mb-4 w-full py-2 rounded-xl bg-emerald-600 text-white font-semibold"
+        >
+          📍 Lấy vị trí của tôi
+        </button>
+
+        <div className="space-y-3 overflow-y-auto flex-1">
+          {points.map((p) => {
+            const coords = [p.latitude, p.longitude];
+            const distance =
+              currentCoords &&
+              haversine(
+                currentCoords[0],
+                currentCoords[1],
+                p.latitude,
+                p.longitude
+              ).toFixed(2);
+
+            return (
+              <div
+                key={p.id}
+                className="border rounded-xl p-3 hover:bg-emerald-50"
+              >
+                <h3 className="font-semibold text-emerald-700">
+                  {p.name}
+                </h3>
+
+                {distance && (
+                  <p className="text-sm">
+                    📏 {distance} km
+                  </p>
+                )}
+
+                <button
+                  onClick={() => handleCreateRoute(coords)}
+                  className="mt-2 w-full py-1 rounded bg-emerald-500 text-white"
                 >
                   🧭 Tạo đường đi
                 </button>
@@ -205,60 +265,44 @@ export default function MapDirection() {
         </div>
       </aside>
 
-      {/* ================= MAP ================= */}
-      <div className="flex-1 rounded-2xl overflow-hidden shadow-lg relative">
+      {/* MAP */}
+      <div className="flex-1 rounded-2xl overflow-hidden shadow-lg">
         <MapContainer
           center={[10.0299, 105.7706]}
           zoom={13}
-          scrollWheelZoom
           className="w-full h-full"
         >
+          <FixMapResize />
+
           <TileLayer
-            attribution="&copy; OpenStreetMap"
             url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+            attribution="&copy; OpenStreetMap"
           />
 
           {points.map((p) => (
             <Marker
               key={p.id}
-              position={[
-                parseFloat(p.latitude),
-                parseFloat(p.longitude),
-              ]}
+              position={[p.latitude, p.longitude]}
               icon={defaultIcon}
             >
-              <Popup>
-                <strong>{p.name}</strong>
-                <p className="text-sm">{p.description}</p>
-                <img
-                  src={p.imageUrl}
-                  alt={p.name}
-                  className="mt-2 rounded-md"
-                  width={120}
-                />
-              </Popup>
+              <Popup>{p.name}</Popup>
             </Marker>
           ))}
 
           {currentCoords && (
             <Marker position={currentCoords} icon={defaultIcon}>
-              <Popup>📍 Vị trí của bạn</Popup>
+              <Popup>📍 Bạn đang ở đây</Popup>
             </Marker>
           )}
 
-          {route && (
-            <Polyline positions={route} color="#10b981" weight={5} />
+          {route.length > 0 && (
+            <Polyline
+              positions={route}
+              color="#10b981"
+              weight={5}
+            />
           )}
-
-          {selectedCoords && <ChangeMapView coords={selectedCoords} />}
         </MapContainer>
-
-        {/* LOGO */}
-        <img
-          src="https://res.cloudinary.com/dcg5wftdq/image/upload/v1760774533/xpknvzz5hfelc4c3qaqc.png"
-          alt="Logo"
-          className="absolute bottom-3 right-3 w-36 opacity-90 pointer-events-none"
-        />
       </div>
     </div>
   );

@@ -4,7 +4,7 @@ export default function TradersOrders() {
   const [orders, setOrders] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
-
+  const API_BASE = import.meta.env.VITE_API_BASE_URL;
   useEffect(() => {
     fetchOrders();
   }, []);
@@ -16,7 +16,7 @@ export default function TradersOrders() {
 
       const token = localStorage.getItem("token");
       const response = await fetch(
-        "http://localhost:8080/api/v1/orders/status/CONFIRMED",
+        `${API_BASE}/api/v1/orders/status/CONFIRMED`,
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -44,7 +44,7 @@ export default function TradersOrders() {
       const recyclerId = JSON.parse(localStorage.getItem("user"))?.id;
 
       const response = await fetch(
-        `http://localhost:8080/api/v1/orders/${orderId}/assign-recycler?recyclerId=${recyclerId}`,
+        `${API_BASE}/api/v1/orders/${orderId}/assign-recycler?recyclerId=${recyclerId}`,
         {
           method: "PATCH",
           headers: {

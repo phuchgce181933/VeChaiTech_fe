@@ -1,7 +1,7 @@
 import { useEffect, useState, useRef } from "react";
 import axios from "axios";
-
-const baseUrl = "http://localhost:8080/api/v1/banners";
+const API_BASE = import.meta.env.VITE_API_BASE_URL;
+const baseUrl = `${API_BASE}/api/v1/banners`;
 
 export default function Banner() {
   const [banners, setBanners] = useState([]);

@@ -1,6 +1,8 @@
 import { useState } from "react";
 
-const Register = () => {
+export default function Register() {
+  const API_BASE = import.meta.env.VITE_API_BASE_URL;
+
   const [formData, setFormData] = useState({
     email: "",
     phone: "",
@@ -8,254 +10,207 @@ const Register = () => {
     username: "",
     password: "",
   });
+
   const [message, setMessage] = useState("");
   const [otp, setOtp] = useState("");
   const [otpSent, setOtpSent] = useState(false);
-  const [verifyMethod, setVerifyMethod] = useState(""); // "EMAIL" hoặc "SMS"
+  const [verifyMethod, setVerifyMethod] = useState(""); // EMAIL | SMS
+  const [loading, setLoading] = useState(false);
 
-
+  /* ================= HANDLE CHANGE ================= */
   const handleChange = (e) => {
-    setFormData({
-      ...formData,
+    setFormData((prev) => ({
+      ...prev,
       [e.target.name]: e.target.value,
-    });
+    }));
   };
-  // Khai báo hàm
+
+  /* ================= SEND OTP ================= */
   const handleVerify = async (method) => {
+    setLoading(true);
+    setMessage("");
     try {
-      const res = await fetch("http://localhost:8080/api/v1/auth/register", {
+      const res = await fetch(`${API_BASE}/api/v1/auth/register`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           ...formData,
-          deliveryMethod: method, // EMAIL hoặc SMS
+          deliveryMethod: method,
         }),
       });
 
-      if (res.ok) {
-        setMessage("OTP đã được gửi qua " + (method === "EMAIL" ? "Email" : "SMS"));
-        setOtpSent(true);
-      } else {
-        const err = await res.json();
-        setMessage(err.message || "Gửi OTP thất bại!");
-      }
-    } catch (error) {
-      console.error(error);
-      setMessage("Lỗi kết nối server!");
+      const data = await res.json();
+
+      if (!res.ok) throw new Error(data.message || "Gửi OTP thất bại");
+
+      setVerifyMethod(method);
+      setOtpSent(true);
+      setMessage(`✅ OTP đã được gửi qua ${method === "EMAIL" ? "Email" : "SMS"}`);
+    } catch (err) {
+      setMessage(`❌ ${err.message}`);
+    } finally {
+      setLoading(false);
     }
   };
 
-  // Xác nhận OTP
-  const handleConfirmOtp = async (e) => {
-    e.preventDefault();
+  /* ================= CONFIRM OTP ================= */
+  const handleConfirmOtp = async () => {
+    setLoading(true);
+    setMessage("");
     try {
-      const res = await fetch("http://localhost:8080/api/v1/auth/confirm-otp", {
+      const res = await fetch(`${API_BASE}/api/v1/auth/confirm-otp`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          identifier: verifyMethod === "EMAIL" ? formData.email : formData.phone,
-          otp: otp,
+          identifier:
+            verifyMethod === "EMAIL" ? formData.email : formData.phone,
+          otp,
         }),
       });
 
-      if (res.ok) {
-        setMessage("Đăng ký thành công!");
-        setOtpSent(false);
-        setOtp("");
-      } else {
-        const err = await res.json();
-        setMessage(err.message || "OTP không hợp lệ!");
-      }
-    } catch (error) {
-      console.error(error);
-      setMessage("Lỗi kết nối server!");
+      const data = await res.json();
+
+      if (!res.ok) throw new Error(data.message || "OTP không hợp lệ");
+
+      setMessage("🎉 Đăng ký thành công! Bạn có thể đăng nhập.");
+      setOtpSent(false);
+      setOtp("");
+    } catch (err) {
+      setMessage(`❌ ${err.message}`);
+    } finally {
+      setLoading(false);
     }
   };
 
   return (
-    <div className="relative min-h-screen flex items-center justify-center from-[#aff0b5] via-[#b2e0b6] to-[#17e11e]">
-      <div className="w-full max-w-3xl bg-gradient-to-br from-[#aff0b5] via-[#b2e0b6] to-[#17e11e] rounded-xl shadow-[0_4px_12px_rgba(0,0,0,0.08)] border p-8 flex flex-col md:flex-row gap-8">
-        {/* Cột trái: Giới thiệu */}
-        <div className="flex-1 flex flex-col justify-start">
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-[#aff0b5] via-[#b2e0b6] to-[#17e11e] px-4">
+      <div className="w-full max-w-5xl bg-white rounded-2xl shadow-xl grid grid-cols-1 md:grid-cols-2 overflow-hidden">
+
+        {/* ================= LEFT (DESKTOP ONLY) ================= */}
+        <div className="hidden md:block p-8 bg-green-50">
           <h2 className="text-2xl font-bold text-green-700 mb-4">
-            VeChaiTech làm gì?
+            VeChaiTech là gì?
           </h2>
-          <p className="text-gray-700 text-sm leading-relaxed">
-            Ứng dụng Ve Chai Tech - Đặt Lịch Thu Gom Rác là một nền
+
+          <p className="text-sm text-gray-700 leading-relaxed">
+            VeChaiTech là nền tảng hỗ trợ thu gom phế liệu tái chế cho cá nhân
+            và hộ gia đình, giúp tích điểm Rcoin và đổi quà hoặc tiền mặt.
           </p>
-          <p className="text-gray-700 text-sm mt-2">
-            tảng hỗ trợ thu gom tái chế phế liệu dành cho người dùng
-          </p>
-          <p className="text-gray-700 text-sm mt-2">
-            cá nhân và hộ gia đình. Mục tiêu chính của ứng dụng là
-            khuyến khích người dùng thu gom phế liệu tại nhà và nhận
-            điểm thưởng (Rcoin) để đổi quà hoặc tiền. Đây là một dự án
-            nhằm thúc đẩy ý thức bảo vệ môi trường và tối ưu hóa quá trình tái chế.
-          </p>
-          <h3 className="text-2xl font-bold text-green-700 mb-1">
-            VeChaiTech gom gì?
+
+          <h3 className="text-xl font-bold text-green-700 mt-6 mb-2">
+            Thu gom các loại:
           </h3>
-          <p className="text-gray-700 text-sm mt-2">
-            Vỏ lon nước giải khát (Ví dụ: lon nước ngọt, lon bia, …)
-            Nhôm các loại bao gồm các vật dụng bằng nhôm như nồi, lọ, nhôm đà
-            Giấy sách báo đã qua sử dụng
-            Nhựa tổng hợp bao gồm PETE1, 2/4/5
-            Đồng, và Sắt thép
-          </p>
+
+          <ul className="list-disc list-inside text-sm text-gray-700 space-y-1">
+            <li>Lon nhôm, đồ nhôm gia dụng</li>
+            <li>Giấy, sách báo cũ</li>
+            <li>Nhựa PET, HDPE, PP</li>
+            <li>Đồng, sắt, thép</li>
+          </ul>
         </div>
-        <form style={styles.form}>
-          <h2>Đăng ký</h2>
-          <input
-            type="email"
-            name="email"
-            placeholder="Email"
-            value={formData.email}
-            onChange={handleChange}
-            required
-            style={styles.input}
-          />
-          <input
-            type="tel"
-            name="phone"
-            placeholder="Số điện thoại"
-            value={formData.phone}
-            onChange={handleChange}
-            required
-            style={styles.input}
-          />
-          <input
-            type="text"
-            name="fullName"
-            placeholder="Họ và tên"
-            value={formData.fullName}
-            onChange={handleChange}
-            required
-            style={styles.input}
-          />
-          <input
-            type="text"
-            name="username"
-            placeholder="Tên đăng nhập"
-            value={formData.username}
-            onChange={handleChange}
-            required
-            style={styles.input}
-          />
-          <input
-            type="password"
-            name="password"
-            placeholder="Mật khẩu"
-            value={formData.password}
-            onChange={handleChange}
-            required
-            style={styles.input}
-          />
 
-          {/* Nhóm button xác thực */}
-          <button
-            type="button"
-            onClick={() => {
-              setVerifyMethod("EMAIL");
-              handleVerify("EMAIL");
-            }}
-            className="mt-6 w-full bg-green-500 hover:bg-green-600 text-white font-bold py-2 rounded"
-          >
-            Xác thực với email
-          </button>
+        {/* ================= FORM ================= */}
+        <div className="p-6 sm:p-8">
+          <h2 className="text-2xl font-bold text-center text-green-700 mb-6">
+            Đăng ký tài khoản
+          </h2>
 
-          <button
-            type="button"
-            onClick={() => {
-              setVerifyMethod("SMS");
-              handleVerify("SMS");
-            }}
-            className="mt-6 w-full bg-green-500 hover:bg-green-600 text-white font-bold py-2 rounded"
-          >
-            Xác thực với số điện thoại
-          </button>
+          <div className="space-y-4">
+            <input
+              className="input"
+              type="email"
+              name="email"
+              placeholder="Email"
+              onChange={handleChange}
+              required
+            />
 
-          {/* Nếu OTP đã gửi thì hiển thị ô nhập OTP và nút xác nhận */}
-          {otpSent && (
-            <>
-              <input
-                type="text"
-                placeholder="Nhập OTP"
-                value={otp}
-                onChange={(e) => setOtp(e.target.value)}
-                style={styles.input}
-              />
+            <input
+              className="input"
+              type="tel"
+              name="phone"
+              placeholder="Số điện thoại"
+              onChange={handleChange}
+              required
+            />
+
+            <input
+              className="input"
+              type="text"
+              name="fullName"
+              placeholder="Họ và tên"
+              onChange={handleChange}
+              required
+            />
+
+            <input
+              className="input"
+              type="text"
+              name="username"
+              placeholder="Tên đăng nhập"
+              onChange={handleChange}
+              required
+            />
+
+            <input
+              className="input"
+              type="password"
+              name="password"
+              placeholder="Mật khẩu"
+              onChange={handleChange}
+              required
+            />
+
+            {/* ================= VERIFY BUTTONS ================= */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-3">
+              <button
+                type="button"
+                disabled={loading}
+                onClick={() => handleVerify("EMAIL")}
+                className="btn-primary"
+              >
+                📧 Xác thực Email
+              </button>
 
               <button
                 type="button"
-                style={{ ...styles.button, backgroundColor: "linear-gradient(to bottom right, #d1fae5, #a7f3d0)", color: "linear-gradient(to bottom right, #d1fae5, #a7f3d0)", width: "100%" }}
-                onClick={handleConfirmOtp}
+                disabled={loading}
+                onClick={() => handleVerify("SMS")}
+                className="btn-primary"
               >
-                Xác nhận OTP
+                📱 Xác thực SMS
               </button>
-            </>
-          )}
-          {message && <p style={styles.message}>{message}</p>}
-        </form>
+            </div>
+
+            {/* ================= OTP ================= */}
+            {otpSent && (
+              <div className="mt-4 p-4 rounded-xl bg-green-50 border border-green-200 space-y-3">
+                <input
+                  className="input"
+                  placeholder="Nhập OTP"
+                  value={otp}
+                  onChange={(e) => setOtp(e.target.value)}
+                />
+
+                <button
+                  type="button"
+                  disabled={loading}
+                  onClick={handleConfirmOtp}
+                  className="w-full py-3 rounded-lg bg-green-600 text-white font-semibold hover:bg-green-700 disabled:opacity-60"
+                >
+                  ✅ Xác nhận OTP
+                </button>
+              </div>
+            )}
+
+            {message && (
+              <p className="text-center text-sm font-medium text-red-600 mt-3">
+                {message}
+              </p>
+            )}
+          </div>
+        </div>
       </div>
     </div>
   );
-};
-
-// CSS inline
-const styles = {
-  container: {
-    display: "flex",
-    justifyContent: "center",
-    alignItems: "center",
-    minHeight: "100vh",
-    background: "linear-gradient(to bottom right, #e8fdf5, #ccfbf1)",
-  },
-  form: {
-    background: "#e8fdf5",
-    padding: "20px",
-    borderRadius: "10px",
-    width: "320px",
-    boxShadow: "0 0 15px rgba(0,0,0,0.1)",
-    textAlign: "center",
-  },
-  input: {
-    width: "100%",
-    padding: "10px",
-    margin: "8px 0",
-    border: "1px solid #ccc",
-    borderRadius: "5px",
-  },
-  button: {
-    padding: "10px 15px",
-    border: "none",
-    borderRadius: "5px",
-    cursor: "pointer",
-    fontWeight: "bold",
-    transition: "0.3s",
-  },
-  buttonGroup: {
-    display: "flex",
-    justifyContent: "space-between",
-    gap: "10px",
-    margin: "10px 0",
-  },
-  verifyButton: {
-    backgroundColor: "#2196F3",
-    color: "#e8fdf5",
-    flex: 1,
-  },
-  submitButton: {
-    backgroundColor: "#4CAF50",
-    color: "#e8fdf5",
-    width: "100%",
-    marginTop: "10px",
-  },
-  message: {
-    marginTop: "10px",
-    fontWeight: "bold",
-    color: "red",
-    textAlign: "center",
-  },
-};
-
-export default Register;
+}

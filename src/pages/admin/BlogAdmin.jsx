@@ -12,9 +12,9 @@ export default function Blog() {
   });
 
   const [image, setImage] = useState(null);
-
+const API_BASE = import.meta.env.VITE_API_BASE_URL;
   const loadData = async () => {
-    const res = await axios.get("http://localhost:8080/api/v1/posts");
+    const res = await axios.get(`${API_BASE}/api/v1/posts`);
     setPosts(res.data.data ?? []);
   };
 
@@ -43,9 +43,9 @@ export default function Blog() {
     if (image) fd.append("image", image);
 
     if (form.id) {
-      await axios.put(`http://localhost:8080/api/v1/posts/${form.id}`, fd);
+      await axios.put(`${API_BASE}/api/v1/posts/${form.id}`, fd);
     } else {
-      await axios.post("http://localhost:8080/api/v1/posts", fd);
+      await axios.post(`${API_BASE}/api/v1/posts`, fd);
     }
 
     loadData();
@@ -68,7 +68,7 @@ export default function Blog() {
 
   const handleDelete = async (id) => {
     if (!window.confirm("Xoá bài viết này?")) return;
-    await axios.delete(`http://localhost:8080/api/v1/posts/${id}`);
+    await axios.delete(`${API_BASE}/api/v1/posts/${id}`);
     loadData();
   };
 

@@ -7,7 +7,7 @@ export default function AdminUserPage() {
 
   const [search, setSearch] = useState("");
   const [roleFilter, setRoleFilter] = useState("ALL");
-
+  const API_BASE = import.meta.env.VITE_API_BASE_URL;
   const [editingUser, setEditingUser] = useState(null);
 
   // ================= FETCH USERS =================
@@ -16,7 +16,7 @@ export default function AdminUserPage() {
       setLoading(true);
       const token = localStorage.getItem("token");
 
-      const res = await fetch("http://localhost:8080/api/users/v1", {
+      const res = await fetch(`${API_BASE}/api/users/v1`, {
         headers: { Authorization: `Bearer ${token}` },
       });
 
@@ -51,7 +51,7 @@ export default function AdminUserPage() {
       };
 
       const res = await fetch(
-        `http://localhost:8080/api/users/v1/${editingUser.id}`,
+        `${API_BASE}/api/users/v1/${editingUser.id}`,
         {
           method: "PUT",
           headers: {

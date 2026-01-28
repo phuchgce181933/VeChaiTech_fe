@@ -13,7 +13,7 @@ export default function OrdersAdmin() {
   const [orders, setOrders] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
-
+  const API_BASE = import.meta.env.VITE_API_BASE_URL;
   const [selectedOrder, setSelectedOrder] = useState(null);
   const [updatingStatus, setUpdatingStatus] = useState(false);
   const [updateSuccess, setUpdateSuccess] = useState("");
@@ -31,7 +31,7 @@ export default function OrdersAdmin() {
       setLoading(true);
       const token = localStorage.getItem("token");
 
-      const res = await fetch("http://localhost:8080/api/v1/orders", {
+      const res = await fetch(`${API_BASE}/api/v1/orders`, {
         headers: { Authorization: `Bearer ${token}` },
       });
 
@@ -66,7 +66,7 @@ export default function OrdersAdmin() {
       const token = localStorage.getItem("token");
 
       const res = await fetch(
-        `http://localhost:8080/api/v1/orders/${orderId}/status?status=${newStatus}`,
+        `${API_BASE}/api/v1/orders/${orderId}/status?status=${newStatus}`,
         {
           method: "PATCH",
           headers: { Authorization: `Bearer ${token}` },

@@ -3,7 +3,7 @@ import { AuthContext } from "../../context/AuthContext";
 
 export default function TradersProfile() {
   const { user } = useContext(AuthContext);
-
+  
   return (
     <div className="space-y-6">
       <h1 className="text-3xl font-bold text-gray-800">👤 Hồ sơ của tôi</h1>

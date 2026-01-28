@@ -7,7 +7,7 @@ export default function Profile() {
 
   const [isEdit, setIsEdit] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
-
+  const API_BASE = import.meta.env.VITE_API_BASE_URL;
   const [form, setForm] = useState({
     fullName: "",
     email: "",
@@ -36,7 +36,7 @@ export default function Profile() {
     try {
       setIsSaving(true);
       const res = await axios.put(
-        `http://localhost:8080/api/users/v1/${user.id}`,
+        `${API_BASE}/api/users/v1/${user.id}`,
         form
       );
 

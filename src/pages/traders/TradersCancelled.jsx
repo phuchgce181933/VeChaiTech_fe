@@ -7,12 +7,12 @@ export default function TradersCancelled() {
   const [search, setSearch] = useState("");
   const { user } = useContext(AuthContext);
   const token = user?.token;
-
+  const API_BASE = import.meta.env.VITE_API_BASE_URL;
   useEffect(() => {
     const fetchOrders = async () => {
       try {
         const res = await axios.get(
-          `http://localhost:8080/api/v1/orders/recycler/${user.id}`,
+          `${API_BASE}/api/v1/orders/recycler/${user.id}`,
           {
             headers: { Authorization: `Bearer ${token}` },
           }

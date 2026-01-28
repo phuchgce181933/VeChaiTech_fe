@@ -6,121 +6,146 @@ import "swiper/css/navigation";
 import "swiper/css/pagination";
 
 export default function BannerSlide() {
+  const API_BASE = import.meta.env.VITE_API_BASE_URL;
+
   const [banners, setBanners] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
   useEffect(() => {
-    fetch("http://localhost:8080/api/v1/banners/list")
-      .then((res) => res.json())
-      .then((data) => {
-        const active = data.filter((b) => b.status === true);
-        setBanners(active);
-        setLoading(false);
-      })
-      .catch((err) => {
-        console.error("Lỗi khi tải banner:", err);
-        setLoading(false);
-      });
-  }, []);
+    const controller = new AbortController();
 
-  if (loading)
+    const fetchBanners = async () => {
+      try {
+        const res = await fetch(`${API_BASE}/api/v1/banners/list`, {
+          headers: {
+            Accept: "application/json",
+            "ngrok-skip-browser-warning": "true",
+          },
+          signal: controller.signal,
+        });
+
+        const contentType = res.headers.get("content-type");
+
+        if (!res.ok || !contentType?.includes("application/json")) {
+          throw new Error("API không trả JSON");
+        }
+
+        const json = await res.json();
+
+        const list = Array.isArray(json)
+          ? json
+          : Array.isArray(json?.data)
+          ? json.data
+          : [];
+
+        setBanners(list.filter((b) => b.status === true));
+      } catch (err) {
+        if (err.name !== "AbortError") {
+          console.error("Banner error:", err);
+          setError("Không tải được banner");
+        }
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchBanners();
+    return () => controller.abort();
+  }, [API_BASE]);
+
+  /* ===== LOADING ===== */
+  if (loading) {
     return (
-      <div className="flex justify-center items-center h-[400px] bg-gradient-to-b border-[#2E7D32] to-green-100">
+      <div className="flex justify-center items-center h-[400px] bg-green-50">
         <div className="flex flex-col items-center gap-3">
-          <div className="w-12 h-12 border-4 border-[#2E7D32] border-t-transparent rounded-full animate-spin"></div>
-          <p className="text-[#2E7D32] font-medium">Đang tải banner...</p>
+          <div className="w-12 h-12 border-4 border-green-600 border-t-transparent rounded-full animate-spin" />
+          <p className="text-green-700 font-medium">Đang tải banner...</p>
         </div>
       </div>
     );
+  }
 
-  if (banners.length === 0)
+  /* ===== ERROR ===== */
+  if (error) {
+    return (
+      <p className="text-center text-red-600 py-10">
+        {error}
+      </p>
+    );
+  }
+
+  /* ===== EMPTY ===== */
+  if (banners.length === 0) {
     return (
       <p className="text-center mt-10 text-gray-600 italic">
         Không có banner nào hoạt động.
       </p>
     );
+  }
 
   return (
-    <div className="relative w-full h-[1px] md:h-[500px] lg:h-[520px] overflow-hidden rounded-3xl shadow-[0_20px_50px_rgba(0,0,0,0.15)] ">
+    <div className="relative w-full h-[360px] md:h-[500px] lg:h-[520px] overflow-hidden rounded-3xl shadow-xl">
       <Swiper
         modules={[Navigation, Pagination, Autoplay]}
         navigation={{
-          enabled: true,
           prevEl: ".custom-prev",
           nextEl: ".custom-next",
         }}
-        pagination={{
-          clickable: true,
-          bulletClass:
-            "swiper-pagination-bullet !w-3 !h-3 !bg-white !opacity-50",
-          bulletActiveClass:
-            "!bg-[#2E7D32] !opacity-100 !shadow-[0_0_8px_2px_rgba(46,125,50,0.6)]",
-        }}
+        pagination={{ clickable: true }}
         autoplay={{ delay: 5000, disableOnInteraction: false }}
         loop
         className="w-full h-full"
       >
-        {banners.map((banner) => (
-          <SwiperSlide key={banner.id}>
+        {banners.map((b) => (
+          <SwiperSlide key={b.id}>
             <a
-              href={banner.targetUrl || "#"}
+              href={b.targetUrl || "#"}
               target="_blank"
               rel="noopener noreferrer"
-              className="relative block w-full h-full"
+              className="block w-full h-full relative"
             >
-              {/* Video hoặc ảnh */}
-              {banner.bannerUrl.match(/\.(mp4|mov|webm|ogg)$/i) ? (
+              {/\.(mp4|webm|ogg)$/i.test(b.bannerUrl) ? (
                 <video
-                  src={banner.bannerUrl}
-                  className="w-full h-full object-cover"
+                  src={b.bannerUrl}
                   autoPlay
                   muted
                   loop
+                  className="w-full h-full object-cover"
                 />
               ) : (
                 <img
-                  src={banner.bannerUrl}
-                  alt={banner.title || "Banner"}
+                  src={b.bannerUrl}
+                  alt={b.title || "Banner"}
                   className="w-full h-full object-cover"
                 />
               )}
 
-              {/* Glass overlay */}
-              <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent"></div>
+              <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent" />
 
-              {/* Text animation */}
-              {banner.title && (
-                <div className="absolute bottom-12 left-6 md:left-12 text-white max-w-xl animate-fade-in">
-                  <h2 className="text-3xl md:text-5xl font-extrabold leading-tight">
-                    {banner.title}
+              {b.title && (
+                <div className="absolute bottom-10 left-6 md:left-12 text-white max-w-xl">
+                  <h2 className="text-3xl md:text-5xl font-extrabold">
+                    {b.title}
                   </h2>
 
-                  {banner.description && (
-                    <p className="mt-4 text-base md:text-lg text-gray-200">
-                      {banner.description}
+                  {b.description && (
+                    <p className="mt-3 text-gray-200">
+                      {b.description}
                     </p>
                   )}
-
-                  <button
-                    className="mt-6 px-6 py-3 rounded-full bg-gradient-to-r from-emerald-500 to-teal-500
-    text-white font-medium shadow-lg hover:scale-105 transition"
-                  >
-                    Khám phá ngay
-                  </button>
                 </div>
-
               )}
             </a>
           </SwiperSlide>
         ))}
       </Swiper>
 
-      {/* Custom navigation buttons */}
-      <button className="custom-prev absolute left-4 top-1/2 -translate-y-1/2 bg-white/30 hover:bg-white/60 backdrop-blur-md text-[#2E7D32] w-10 h-10 rounded-full flex items-center justify-center shadow-lg transition">
-        <span className="text-xl font-bold">‹</span>
+      <button className="custom-prev absolute left-4 top-1/2 -translate-y-1/2 bg-white/40 w-10 h-10 rounded-full">
+        ‹
       </button>
-      <button className="custom-next absolute right-4 top-1/2 -translate-y-1/2 bg-white/30 hover:bg-white/60 backdrop-blur-md text-[#2E7D32] w-10 h-10 rounded-full flex items-center justify-center shadow-lg transition">
-        <span className="text-xl font-bold">›</span>
+      <button className="custom-next absolute right-4 top-1/2 -translate-y-1/2 bg-white/40 w-10 h-10 rounded-full">
+        ›
       </button>
     </div>
   );

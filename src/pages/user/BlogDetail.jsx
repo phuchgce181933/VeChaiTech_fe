@@ -4,9 +4,9 @@ import { useParams } from "react-router-dom";
 export default function BlogDetail() {
   const { id } = useParams();
   const [post, setPost] = useState(null);
-
+  const API_BASE = import.meta.env.VITE_API_BASE_URL;
   useEffect(() => {
-    fetch(`http://localhost:8080/api/v1/posts/${id}`)
+    fetch(`${API_BASE}/api/v1/posts/${id}`)
       .then((res) => res.json())
       .then((json) => {
         console.log("API RESPONSE:", json);

@@ -11,9 +11,12 @@ import {
 } from "recharts";
 import PropTypes from "prop-types";
 
-const API_BASE = "http://localhost:8080/api/admin/revenue";
+/* ================= CONFIG ================= */
+const API_BASE = import.meta.env.VITE_API_BASE_URL;
+const REVENUE_API = `${API_BASE}/api/admin/revenue`;
 const NGUONG_TANG_GIAM = 0.2; // 20%
 
+/* ================= PAGE ================= */
 export default function AdminRevenue() {
   const [homNay, setHomNay] = useState(null);
   const [tuan, setTuan] = useState(null);
@@ -28,9 +31,9 @@ export default function AdminRevenue() {
   /* ===== DOANH THU TỔNG ===== */
   useEffect(() => {
     Promise.all([
-      fetch(`${API_BASE}/today`).then(r => r.json()),
-      fetch(`${API_BASE}/week`).then(r => r.json()),
-      fetch(`${API_BASE}/month`).then(r => r.json()),
+      fetch(`${REVENUE_API}/today`).then((r) => r.json()),
+      fetch(`${REVENUE_API}/week`).then((r) => r.json()),
+      fetch(`${REVENUE_API}/month`).then((r) => r.json()),
     ])
       .then(([h, t, th]) => {
         setHomNay(h);
@@ -42,22 +45,22 @@ export default function AdminRevenue() {
 
   /* ===== DOANH THU THEO NGÀY ===== */
   useEffect(() => {
-    fetch(`${API_BASE}/last-days?days=${soNgay}`)
-      .then(r => r.json())
-      .then(res => setTongDoanhThuNgay(res.revenue || 0));
+    fetch(`${REVENUE_API}/last-days?days=${soNgay}`)
+      .then((r) => r.json())
+      .then((res) => setTongDoanhThuNgay(res.revenue || 0));
 
-    fetch(`${API_BASE}/last-days-detail?days=${soNgay}`)
-      .then(r => r.json())
-      .then(res => setChiTietNgay(res || []));
+    fetch(`${REVENUE_API}/last-days-detail?days=${soNgay}`)
+      .then((r) => r.json())
+      .then((res) => setChiTietNgay(res || []));
   }, [soNgay]);
 
-  /* ===== PHÂN TÍCH TĂNG / GIẢM MẠNH ===== */
+  /* ===== PHÂN TÍCH BIẾN ĐỘNG ===== */
   const nhatKyBienDong = useMemo(() => {
     const logs = [];
 
     for (let i = 1; i < chiTietNgay.length; i++) {
-      const truoc = chiTietNgay[i - 1].revenue;
-      const sau = chiTietNgay[i].revenue;
+      const truoc = chiTietNgay[i - 1]?.revenue;
+      const sau = chiTietNgay[i]?.revenue;
 
       if (!truoc) continue;
 
@@ -170,15 +173,15 @@ export default function AdminRevenue() {
             {nhatKyBienDong.map((log, i) => (
               <li
                 key={i}
-                className={`p-4 rounded-xl text-sm font-medium
-                  ${log.loai === "TANG"
+                className={`p-4 rounded-xl text-sm font-medium ${
+                  log.loai === "TANG"
                     ? "bg-green-50 text-green-700"
-                    : "bg-red-50 text-red-700"}`}
+                    : "bg-red-50 text-red-700"
+                }`}
               >
                 {log.loai === "TANG" ? "📈" : "📉"} Doanh thu{" "}
                 {log.loai === "TANG" ? "tăng mạnh" : "giảm mạnh"}{" "}
-                <b>{log.phanTram}%</b> vào ngày{" "}
-                <b>{log.ngay}</b>
+                <b>{log.phanTram}%</b> vào ngày <b>{log.ngay}</b>
               </li>
             ))}
           </ul>
@@ -214,6 +217,7 @@ function KPI({ title, value }) {
 }
 
 /* ================= PROPTYPES ================= */
+
 KPI.propTypes = {
   title: PropTypes.string.isRequired,
   value: PropTypes.number,

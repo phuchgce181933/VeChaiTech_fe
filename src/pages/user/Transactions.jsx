@@ -1,36 +1,45 @@
-import { useState } from "react";
+import { useState, useRef, useEffect } from "react";
 
 export default function CurrentLocation() {
-  const [location, setLocation] = useState({ latitude: "", longitude: "" });
-  const [address, setAddress] = useState(""); // lưu tên địa điểm
+  const [coords, setCoords] = useState(null);
+  const [address, setAddress] = useState("");
   const [loading, setLoading] = useState(false);
+  const watchIdRef = useRef(null);
 
+  /* ===== CLEANUP GPS ===== */
+  useEffect(() => {
+    return () => {
+      if (watchIdRef.current) {
+        navigator.geolocation.clearWatch(watchIdRef.current);
+      }
+    };
+  }, []);
+
+  /* ===== GET CURRENT LOCATION ===== */
   const handleGetLocation = () => {
     if (!navigator.geolocation) {
-      alert("Trình duyệt của bạn không hỗ trợ Geolocation.");
+      alert("Trình duyệt không hỗ trợ GPS");
       return;
     }
 
     setLoading(true);
-    navigator.geolocation.getCurrentPosition(
-      async (position) => {
-        const latitude = position.coords.latitude;
-        const longitude = position.coords.longitude;
 
-        setLocation({ latitude, longitude });
+    watchIdRef.current = navigator.geolocation.getCurrentPosition(
+      async (pos) => {
+        const latitude = pos.coords.latitude;
+        const longitude = pos.coords.longitude;
+
+        setCoords({ latitude, longitude });
 
         try {
-          const apiKey = "ac7e477b5cf10839ea4d5334be2ecdd097baa3663ccbd787e59e9f609eb1ad71"; // thay bằng key của bạn
           const res = await fetch(
-            `https://serpapi.com/search.json?engine=google_maps&type=reverse_geocode&lat=${latitude}&lng=${longitude}&api_key=${apiKey}`
+            `https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${latitude}&lon=${longitude}`
           );
-          const data = await res.json();
 
-          if (data.results && data.results.length > 0) {
-            setAddress(data.results[0].formatted_address);
-          } else {
-            setAddress("Không xác định được địa điểm");
-          }
+          const data = await res.json();
+          setAddress(
+            data.display_name || "Không xác định được địa chỉ"
+          );
         } catch (err) {
           console.error(err);
           setAddress("Lỗi khi lấy địa chỉ");
@@ -38,28 +47,54 @@ export default function CurrentLocation() {
           setLoading(false);
         }
       },
-      (error) => {
-        console.error(error);
-        alert("Không thể lấy vị trí. Hãy kiểm tra quyền truy cập GPS.");
+      (err) => {
+        console.error(err);
+        alert("Không thể lấy vị trí. Hãy kiểm tra quyền GPS.");
         setLoading(false);
+      },
+      {
+        enableHighAccuracy: true,
+        timeout: 10000,
       }
     );
   };
 
   return (
-    <div style={{ padding: "20px" }}>
-      <button onClick={handleGetLocation} disabled={loading}>
-        {loading ? "Đang lấy vị trí..." : "Lấy tọa độ hiện tại"}
+    <div className="max-w-md mx-auto p-6 bg-white rounded-2xl shadow">
+      <h2 className="text-xl font-bold text-emerald-700 mb-4">
+        📍 Vị trí hiện tại
+      </h2>
+
+      <button
+        onClick={handleGetLocation}
+        disabled={loading}
+        className={`w-full py-3 rounded-xl font-semibold text-white transition
+          ${
+            loading
+              ? "bg-gray-400 cursor-not-allowed"
+              : "bg-emerald-600 hover:bg-emerald-700"
+          }
+        `}
+      >
+        {loading ? "Đang lấy vị trí..." : "Lấy vị trí của tôi"}
       </button>
 
-      {location.latitude && location.longitude && (
-        <div style={{ marginTop: "10px" }}>
-          <strong>Latitude:</strong> {location.latitude} <br />
-          <strong>Longitude:</strong> {location.longitude} <br />
+      {coords && (
+        <div className="mt-4 text-sm text-gray-700 space-y-2">
+          <p>
+            <strong>Latitude:</strong> {coords.latitude}
+          </p>
+          <p>
+            <strong>Longitude:</strong> {coords.longitude}
+          </p>
+
           {address && (
-            <>
-              <strong>Địa chỉ hiện tại:</strong> {address}
-            </>
+            <p>
+              <strong>Địa chỉ:</strong>{" "}
+              <span className="text-gray-600">
+                {address}
+              </span>
+            </p>
           )}
         </div>
       )}

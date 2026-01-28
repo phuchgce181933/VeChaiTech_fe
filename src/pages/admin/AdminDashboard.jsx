@@ -13,10 +13,11 @@ import {
 } from "recharts";
 
 /* ================= API ================= */
-const REVENUE_API = "http://localhost:8080/api/admin/revenue";
-const USER_API = "http://localhost:8080/api/users/v1";
-const ORDERS_STAT_API = "http://localhost:8080/api/admin/orders/statistics";
-const ORDERS_API = "http://localhost:8080/api/v1/orders";
+const API_BASE = import.meta.env.VITE_API_BASE_URL;
+const REVENUE_API = `${API_BASE}/api/admin/revenue`;
+const USER_API = `${API_BASE}/api/users/v1`;
+const ORDERS_STAT_API = `${API_BASE}/api/admin/orders/statistics`;
+const ORDERS_API = `${API_BASE}/api/v1/orders`;
 
 /* ================= PAGE ================= */
 export default function AdminDashboard() {

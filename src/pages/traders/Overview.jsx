@@ -4,7 +4,7 @@ import { AuthContext } from "../../context/AuthContext";
 
 export default function TradersOverview() {
   const { user } = useContext(AuthContext);
-
+  const API_BASE = import.meta.env.VITE_API_BASE_URL;
   const [balance, setBalance] = useState(0);
   const [transactions, setTransactions] = useState([]);
   const [depositAmount, setDepositAmount] = useState("");
@@ -40,7 +40,7 @@ export default function TradersOverview() {
       setError("");
 
       const balanceRes = await fetch(
-        "http://localhost:8080/api/v1/wallet/balance",
+        `${API_BASE}/api/v1/wallet/balance`,
         { headers: authHeader }
       );
       const balanceData = await balanceRes.json();
@@ -55,7 +55,7 @@ export default function TradersOverview() {
       setBalance(balanceData);
 
       const transRes = await fetch(
-        "http://localhost:8080/api/v1/wallet/transactions",
+        `${API_BASE}/api/v1/wallet/transactions`,
         { headers: authHeader }
       );
       const transData = await transRes.json();
@@ -80,7 +80,7 @@ export default function TradersOverview() {
       setDepositLoading(true);
 
       const res = await fetch(
-        `http://localhost:8080/api/v1/wallet/deposit?amount=${depositAmount}`,
+        `${API_BASE}/api/v1/wallet/deposit?amount=${depositAmount}`,
         { method: "POST", headers: authHeader }
       );
 
@@ -148,7 +148,7 @@ export default function TradersOverview() {
           <p className="text-sm text-gray-500">
             Số tiền tối thiểu: 10.000₫
           </p>
-           <p className="text-sm text-red-500">
+          <p className="text-sm text-red-500">
             Tính năng đang được phát triển, nếu có trục trặc vui lòng liên hệ qua số 0905087335 hoặc gửi gmail ở trang chủ để được hỗ trợ sớm nhất.
           </p>
         </div>
@@ -170,8 +170,8 @@ export default function TradersOverview() {
             {depositLoading
               ? "Đang xử lý..."
               : waitingPayment
-              ? "Đang chờ thanh toán..."
-              : "Nạp tiền"}
+                ? "Đang chờ thanh toán..."
+                : "Nạp tiền"}
           </button>
         </div>
       </div>
@@ -203,11 +203,10 @@ export default function TradersOverview() {
                 </div>
 
                 <span
-                  className={`font-bold ${
-                    tx.type === "DEPOSIT"
+                  className={`font-bold ${tx.type === "DEPOSIT"
                       ? "text-green-600"
                       : "text-red-600"
-                  }`}
+                    }`}
                 >
                   {tx.type === "DEPOSIT" ? "+" : "-"}
                   {tx.amount.toLocaleString()}₫

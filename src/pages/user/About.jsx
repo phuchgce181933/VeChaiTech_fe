@@ -1,129 +1,131 @@
-import { Leaf, Users, Rocket } from "lucide-react";
-
-const iconStyle =
-  "w-12 h-12 text-emerald-600 bg-emerald-100/70 p-3 rounded-2xl";
-
-export default function AboutPage() {
-  const coreValues = [
-    {
-      icon: <Leaf className={iconStyle} />,
-      title: "Bền vững",
-      desc: "Mỗi hành động đều hướng đến môi trường xanh và tái chế hiệu quả.",
-    },
-    {
-      icon: <Users className={iconStyle} />,
-      title: "Kết nối",
-      desc: "Liên kết người dân, doanh nghiệp và cộng đồng để xây dựng kinh tế tuần hoàn.",
-    },
-    {
-      icon: <Rocket className={iconStyle} />,
-      title: "Đổi mới",
-      desc: "Ứng dụng công nghệ, AI và bản đồ thông minh để tối ưu thu gom.",
-    },
-  ];
-
-  const timeline = [
-    { year: "2023", event: "Ý tưởng VeChaiTech ra đời tại Hackathon Đại học FPT." },
-    { year: "2024", event: "Ra mắt bản thử nghiệm VeChaiTech Beta." },
-    { year: "2025", event: "Phát triển gamification & bản đồ thu gom thông minh." },
-    { year: "Tương lai", event: "Mở rộng toàn quốc và Đông Nam Á." },
-  ];
-
+export default function MinimalLanding() {
   return (
-    <div className="relative space-y-24">
+    <div className="bg-white text-gray-900">
 
-      {/* INTRO */}
-      <section className="max-w-5xl mx-auto px-6 pt-20 text-center">
-        <h1 className="text-4xl md:text-5xl font-extrabold text-emerald-700 mb-6">
-          VeChaiTech là gì?
+      {/* ================= HERO ================= */}
+      <section className="max-w-4xl mx-auto px-6 pt-32 pb-24">
+        <h1 className="text-5xl md:text-6xl font-bold leading-tight">
+          Tài nguyên cũ.
+          <br />
+          Giá trị mới.
         </h1>
-        <p className="text-lg md:text-xl leading-relaxed text-gray-600">
-          VeChaiTech là nền tảng công nghệ xanh kết nối người dân, điểm thu gom và
-          doanh nghiệp tái chế nhằm xây dựng hệ sinh thái tái chế minh bạch và bền vững.
+        <p className="mt-6 text-lg text-gray-600 max-w-xl">
+          Nền tảng giao dịch tài nguyên tái chế và hàng đã qua sử dụng,
+          kết nối con người – doanh nghiệp – đơn vị tái chế.
         </p>
-      </section>
 
-      {/* VISION & MISSION */}
-      <section className="px-6">
-        <div className="max-w-5xl mx-auto bg-white/80 backdrop-blur-xl
-          rounded-3xl shadow-xl border border-emerald-100 p-10 text-center">
-          <h2 className="text-3xl font-bold text-emerald-700 mb-6">
-            Tầm nhìn & Sứ mệnh
-          </h2>
-          <p className="mb-4 text-gray-600">
-            <strong className="text-gray-800">Tầm nhìn:</strong> Trở thành nền tảng công nghệ
-            hàng đầu Việt Nam trong thu gom và tái chế rác thải.
-          </p>
-          <p className="text-gray-600">
-            <strong className="text-gray-800">Sứ mệnh:</strong> Kết nối cộng đồng thông qua
-            công nghệ số để rác thải được quản lý minh bạch và hiệu quả.
-          </p>
+        <div className="mt-10 flex gap-8 text-sm font-semibold">
+          <button className="underline underline-offset-4">Bắt đầu</button>
+          <button className="underline underline-offset-4">Marketplace</button>
         </div>
       </section>
 
-      {/* CORE VALUES */}
-      <section className="px-6 text-center">
-        <h2 className="text-3xl font-bold text-emerald-700 mb-12">
-          Giá trị cốt lõi
+      {/* ================= HERO IMAGE ================= */}
+      <section className="w-full">
+        <img
+          src="https://images.unsplash.com/photo-1611270629569-8b357cb88da9"
+          alt="Recycling industry"
+          className="w-full h-[70vh] object-cover"
+        />
+      </section>
+
+      {/* ================= METRICS ================= */}
+      <section className="max-w-6xl mx-auto px-6 py-28 grid grid-cols-2 md:grid-cols-4 gap-16">
+        {[
+          ["12,4 tấn", "Vật liệu đã thu gom"],
+          ["320+", "Sản phẩm giao dịch"],
+          ["1.200+", "Người dùng hoạt động"],
+          ["18", "Đối tác tái chế"],
+        ].map(([value, label], i) => (
+          <div key={i}>
+            <div className="text-4xl font-bold tracking-tight">{value}</div>
+            <div className="text-sm text-gray-500 mt-2">{label}</div>
+          </div>
+        ))}
+      </section>
+
+      {/* ================= STORY SECTION ================= */}
+      <section className="max-w-5xl mx-auto px-6 py-32 grid grid-cols-1 md:grid-cols-2 gap-20 items-center">
+        <div>
+          <h2 className="text-3xl font-bold mb-6">
+            Một hệ thống đang vận hành thật
+          </h2>
+          <p className="text-gray-600 leading-relaxed mb-4">
+            VeChaiTech không chỉ dừng lại ở việc thu gom rác.
+            Chúng tôi xây dựng một hệ thống dữ liệu giúp theo dõi,
+            định giá và đưa tài nguyên đã qua sử dụng quay trở lại thị trường.
+          </p>
+          <p className="text-gray-600 leading-relaxed">
+            Mỗi giao dịch đều minh bạch, có thể kiểm chứng và tạo ra giá trị
+            kinh tế thực tế cho các bên tham gia.
+          </p>
+        </div>
+
+        <img
+          src="https://images.unsplash.com/photo-1581090700227-1e37b190418e"
+          alt="Industrial recycling"
+          className="w-full h-[420px] object-cover"
+        />
+      </section>
+
+      {/* ================= PROCESS ================= */}
+      <section className="max-w-4xl mx-auto px-6 py-28">
+        <h2 className="text-2xl font-semibold mb-10">
+          Cách nền tảng vận hành
+        </h2>
+        <ul className="space-y-4 text-gray-600 text-lg">
+          <li>Thu gom → Phân loại → Định giá → Giao dịch</li>
+          <li>Dữ liệu cập nhật theo thời gian thực</li>
+          <li>Kết nối trực tiếp người bán – người mua – đơn vị tái chế</li>
+        </ul>
+      </section>
+
+      {/* ================= MARKETPLACE PREVIEW ================= */}
+      <section className="max-w-6xl mx-auto px-6 py-32">
+        <h2 className="text-3xl font-bold mb-14">
+          Marketplace tài nguyên tái chế
         </h2>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-10 max-w-6xl mx-auto">
-          {coreValues.map((v, i) => (
-            <div
-              key={i}
-              className="bg-white/80 backdrop-blur-xl rounded-3xl
-                shadow-lg border border-emerald-100 p-8
-                hover:-translate-y-1 hover:shadow-2xl transition-all"
-            >
-              <div className="mb-6 flex justify-center">{v.icon}</div>
-              <h3 className="text-xl font-semibold text-emerald-700">
-                {v.title}
-              </h3>
-              <p className="text-gray-600 mt-3">{v.desc}</p>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-12">
+          {[
+            "https://images.unsplash.com/photo-1593941707882-a5bba14938c7",
+            "https://images.unsplash.com/photo-1602526219045-2b47c3fbc21a",
+            "https://images.unsplash.com/photo-1586864387789-628af9feed72",
+          ].map((src, i) => (
+            <div key={i}>
+              <img
+                src={src}
+                alt="Marketplace item"
+                className="w-full h-[300px] object-cover mb-4"
+              />
+              <div className="text-sm text-gray-500">Sản phẩm tái chế</div>
+              <div className="font-semibold mt-1">Vật liệu đã qua sử dụng</div>
             </div>
           ))}
         </div>
       </section>
 
-      {/* TIMELINE */}
-      <section className="px-6">
-        <div className="max-w-5xl mx-auto bg-white/80 backdrop-blur-xl
-          rounded-3xl shadow-xl border border-emerald-100 p-10">
-          <h2 className="text-3xl font-bold text-emerald-700 text-center mb-10">
-            Hành trình phát triển
-          </h2>
-
-          <div className="space-y-8">
-            {timeline.map((item, i) => (
-              <div key={i} className="flex gap-6 items-start">
-                <span className="px-5 py-2 rounded-full text-sm font-semibold
-                  bg-emerald-100 text-emerald-700">
-                  {item.year}
-                </span>
-                <p className="text-gray-600">{item.event}</p>
-              </div>
-            ))}
-          </div>
-        </div>
+      {/* ================= FULL IMAGE BREAK ================= */}
+      <section className="w-full">
+        <img
+          src="https://images.unsplash.com/photo-1611270629569-8b357cb88da9"
+          alt="Warehouse"
+          className="w-full h-[60vh] object-cover"
+        />
       </section>
 
-      {/* CTA */}
-      <section className="px-6 pb-24">
-        <div className="max-w-5xl mx-auto rounded-3xl
-          bg-gradient-to-r from-emerald-600 to-green-700
-          text-white text-center p-12 shadow-2xl">
-          <h2 className="text-3xl md:text-4xl font-extrabold mb-4">
-            Cùng VeChaiTech xây dựng tương lai xanh
-          </h2>
-          <p className="text-lg mb-8 opacity-90">
-            Mỗi hành động nhỏ đều có thể tạo nên thay đổi lớn cho môi trường.
-          </p>
-          <button className="bg-white text-emerald-700 font-semibold
-            px-10 py-3 rounded-full hover:bg-emerald-50 transition">
-            Tham gia cộng đồng
-          </button>
-        </div>
+      {/* ================= CTA ================= */}
+      <section className="max-w-4xl mx-auto px-6 py-40">
+        <h2 className="text-4xl font-bold mb-8 leading-tight">
+          Rác thải chỉ là tài nguyên
+          <br />
+          bị đặt sai chỗ.
+        </h2>
+        <button className="underline underline-offset-4 text-lg font-semibold">
+          Tham gia nền tảng
+        </button>
       </section>
+
     </div>
   );
 }

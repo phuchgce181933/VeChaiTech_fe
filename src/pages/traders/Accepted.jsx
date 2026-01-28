@@ -5,7 +5,7 @@ import { AuthContext } from "../../context/AuthContext";
 export default function TradersAccepted() {
   const { user } = useContext(AuthContext);
   const token = user?.token;
-
+  const API_BASE = import.meta.env.VITE_API_BASE_URL;
   const [orders, setOrders] = useState([]);
   const [adminLocation, setAdminLocation] = useState(null);
 
@@ -36,7 +36,7 @@ export default function TradersAccepted() {
       try {
         // 1️⃣ Lấy danh sách
         const listRes = await axios.get(
-          `http://localhost:8080/api/v1/orders/recycler/${user.id}`,
+          `${API_BASE}/api/v1/orders/recycler/${user.id}`,
           { headers: { Authorization: `Bearer ${token}` } }
         );
 
@@ -46,7 +46,7 @@ export default function TradersAccepted() {
 
         // 2️⃣ Gọi chi tiết từng đơn
         const detailRequests = claimedOrders.map((o) =>
-          axios.get(`http://localhost:8080/api/v1/orders/${o.id}`, {
+          axios.get(`${API_BASE}/api/v1/orders/${o.id}`, {
             headers: { Authorization: `Bearer ${token}` },
           })
         );
@@ -112,7 +112,7 @@ export default function TradersAccepted() {
       formData.append("userId", user.id);
 
       await axios.post(
-        `http://localhost:8080/api/v1/orders/${selectedOrderId}/cancel`,
+        `${API_BASE}/orders/${selectedOrderId}/cancel`,
         formData,
         { headers: { Authorization: `Bearer ${token}` } }
       );
@@ -129,7 +129,7 @@ export default function TradersAccepted() {
   const completeOrder = async (orderId) => {
     try {
       await axios.patch(
-        `http://localhost:8080/api/v1/orders/${orderId}/status?status=COMPLETED`,
+        `${API_BASE}/api/v1/orders/${orderId}/status?status=COMPLETED`,
         {},
         { headers: { Authorization: `Bearer ${token}` } }
       );
