@@ -3,7 +3,7 @@ import WasteListings from "./WasteListings";
 import RecyclerDemands from "./RecyclerDemands";
 import MapDirection from "./MapDirection";
 import Contact from "./Contact";
-
+import ServicesSection from "./ServicesSection";
 export default function About() {
   return (
     <div className="relative w-full overflow-x-hidden">
@@ -14,27 +14,35 @@ export default function About() {
           <BannerSlide />
         </div>
       </section>
-
-      {/* ================= WASTE + RECYCLER ================= */}
-      <section className="relative -mt-6 sm:-mt-10 px-3 sm:px-6">
+      {/* ================= SERVICES ================= */}
+      <section className="relative -mt-10 sm:-mt-7 px-7 sm:px-6">
+        <div className="max-w-10xl mx-auto space-y-10 sm:space-y-5">
+          <ServicesSection />
+        </div>
+      </section>
+      {/* ================= WASTE  ================= */}
+      <section className="relative -mt-6 sm:-mt-7 px-3 sm:px-6">
         <div className="max-w-7xl mx-auto space-y-6 sm:space-y-10">
           <WasteListings />
+        </div>
+      </section>
+      {/* ================= RECYCLER ================= */}
+      <section className="relative -mt-6 sm:-mt-7 px-3 sm:px-6">
+        <div className="max-w-7xl mx-auto space-y-6 sm:space-y-10">
           <RecyclerDemands />
         </div>
       </section>
-
       {/* ================= MAP ================= */}
-      <section className="mt-14 sm:mt-20 px-3 sm:px-6">
-        <div className="text-center mb-6 sm:mb-10 px-2">
+      <section className="mt-14 sm:mt-7 px-3 sm:px-6">
+        <div className="text-center mb-7 sm:mb-10 px-2">
           <h3 className="text-2xl sm:text-3xl md:text-4xl font-bold text-emerald-800 leading-tight">
             Tìm điểm thu gom gần bạn
           </h3>
-          <p className="text-gray-600 mt-3 text-sm sm:text-base max-w-2xl mx-auto">
+          <p className="text-gray-600 mt-3 text-sm sm:text-base max-w-4xl mx-auto">
             Xác định vị trí nhanh chóng, tìm điểm thu gom hoặc nhà tái chế gần nhất
             để tiết kiệm thời gian và chi phí.
           </p>
         </div>
-
         <div className="max-w-6xl mx-auto rounded-2xl sm:rounded-3xl overflow-hidden shadow-xl">
           {/* Map responsive height */}
           <div className="h-[300px] sm:h-[400px] md:h-[480px]">

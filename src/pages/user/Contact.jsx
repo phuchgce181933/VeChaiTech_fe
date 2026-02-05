@@ -47,8 +47,11 @@ export default function Contact() {
   };
 
   return (
-    <section className="relative w-full overflow-x-hidden">
-      <div className="max-w-6xl mx-auto grid gap-10 md:grid-cols-2 items-start">
+    <section className=" bg-white/90 backdrop-blur-xl
+            rounded-3xl shadow-2xl
+            border border-emerald-200
+            p-6 md:p-10 " >
+      <div className="max-w-5xl mx-auto grid gap-10 md:grid-cols-2">
 
         {/* LEFT CONTENT */}
         <div className="space-y-4 md:space-y-6">

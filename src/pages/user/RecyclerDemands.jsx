@@ -44,10 +44,10 @@ export default function RecyclerDemands() {
   };
 
   return (
-    <section className="py-12 md:py-16">
+    <section className="py-12 md:py-16 mt-10">
       {!selected ? (
         <>
-          <h2 className="text-3xl md:text-5xl font-bold text-center text-emerald-800 mb-8 md:mb-10">
+          <h2 className="text-4xl md:text-6xl font-bold text-center text-emerald-800 mb-20">
             Doanh nghiệp tái chế
           </h2>
 
@@ -88,12 +88,23 @@ export default function RecyclerDemands() {
           </div>
 
           {/* ===== DESKTOP: GRID ===== */}
-          <div className="hidden md:grid grid-cols-2 lg:grid-cols-4 gap-6 max-w-7xl mx-auto px-4">
+          <div className="hidden md:grid grid-cols-2 lg:grid-cols-4 gap-6 max-w-7xl mx-auto px-4 ">
             {demands.map((d) => (
               <div
                 key={d.id}
                 onClick={() => selectDemand(d)}
-                className="bg-white p-6 rounded-2xl shadow hover:shadow-lg cursor-pointer transition text-center"
+                className="
+  bg-white p-6 rounded-2xl
+
+  border-2 border-emerald-50
+  hover:border-emerald-500
+
+  shadow hover:shadow-lg
+  cursor-pointer
+  transition
+  text-center
+"
+
               >
                 <img
                   src={d.imageUrl}

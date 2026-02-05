@@ -74,13 +74,12 @@ export default function WasteListings() {
   }
 
   return (
-    <section className="pt-14 pb-10">
-      <h2 className="text-2xl md:text-5xl font-bold text-center text-emerald-800 mb-6">
-        Vật liệu tái chế phổ biến ♻️
+    <section className="mt-12 sm:mt-20 px-3 sm:px-6">
+      <h2 className="text-4xl md:text-6xl font-bold text-center text-emerald-800 mb-20">
+        Vật liệu tái chế phổ biến 
       </h2>
 
       <div className="relative max-w-7xl mx-auto">
-
         {/* LEFT – chỉ desktop */}
         <button
           onClick={() => scroll("left")}
@@ -90,7 +89,6 @@ export default function WasteListings() {
   bg-white shadow-lg rounded-full w-10 h-10
   items-center justify-center
 "
-
         >
           ‹
         </button>
@@ -117,13 +115,17 @@ export default function WasteListings() {
                 navigate(`/create-collection?wasteListingId=${item.id}`)
               }
               className="
-                w-44 md:w-56
-                flex-none
-                bg-white rounded-2xl p-3 md:p-4
-                shadow hover:shadow-xl
-                transition cursor-pointer
-                active:scale-95
-              "
+    w-44 md:w-56 sm:gap-10
+    flex-none
+    bg-white rounded-2xl p-6 md:p-8
+
+    border-2 border-emerald-50
+    hover:border-emerald-500
+
+    shadow hover:shadow-xl
+    transition cursor-pointer
+    active:scale-95
+  "
             >
               <img
                 src={item.wasteUrl}
@@ -145,7 +147,7 @@ export default function WasteListings() {
 
         {/* RIGHT – chỉ desktop */}
         <button
-         className="
+          className="
   hidden md:flex
   absolute -right-4 top-1/2 -translate-y-1/2 z-10
   bg-white shadow-lg rounded-full w-10 h-10
