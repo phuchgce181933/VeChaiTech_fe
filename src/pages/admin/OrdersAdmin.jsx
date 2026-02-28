@@ -13,7 +13,7 @@ export default function OrdersAdmin() {
   const [orders, setOrders] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
-  const API_BASE = import.meta.env.VITE_API_BASE_URL;
+
   const [selectedOrder, setSelectedOrder] = useState(null);
   const [updatingStatus, setUpdatingStatus] = useState(false);
   const [updateSuccess, setUpdateSuccess] = useState("");
@@ -21,7 +21,7 @@ export default function OrdersAdmin() {
   // 🔎 FILTER & SEARCH
   const [statusFilter, setStatusFilter] = useState("ALL");
   const [searchTerm, setSearchTerm] = useState("");
-
+  const API_BASE = import.meta.env.VITE_API_BASE_URL;
   useEffect(() => {
     fetchOrders();
   }, []);
@@ -66,7 +66,7 @@ export default function OrdersAdmin() {
       const token = localStorage.getItem("token");
 
       const res = await fetch(
-        `${API_BASE}/api/v1/orders/${orderId}/status?status=${newStatus}`,
+        `http://localhost:8080/api/v1/orders/${orderId}/status?status=${newStatus}`,
         {
           method: "PATCH",
           headers: { Authorization: `Bearer ${token}` },

@@ -4,7 +4,7 @@ import { AuthContext } from "../../context/AuthContext";
 
 export default function TradersOverview() {
   const { user } = useContext(AuthContext);
-  const API_BASE = import.meta.env.VITE_API_BASE_URL;
+
   const [balance, setBalance] = useState(0);
   const [transactions, setTransactions] = useState([]);
   const [depositAmount, setDepositAmount] = useState("");
@@ -12,7 +12,7 @@ export default function TradersOverview() {
   const [waitingPayment, setWaitingPayment] = useState(false);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
-
+  const API_BASE = import.meta.env.VITE_API_BASE_URL;
   const lastBalanceRef = useRef(0);
 
   const authHeader = {
@@ -102,30 +102,31 @@ export default function TradersOverview() {
   /* ================= UI ================= */
   if (loading) {
     return (
-      <div className="flex justify-center items-center h-96">
-        <div className="w-12 h-12 border-4 border-green-500 border-t-transparent rounded-full animate-spin"></div>
+      <div className="flex justify-center items-center h-72">
+        <div className="w-10 h-10 border-4 border-green-500 border-t-transparent rounded-full animate-spin"></div>
       </div>
     );
   }
 
   if (error) {
-    return <div className="text-red-600">{error}</div>;
+    return <div className="text-red-600 px-4">{error}</div>;
   }
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-6 pb-16">
+
       {/* HEADER */}
-      <div>
-        <h1 className="text-3xl font-bold text-gray-900">
+      <div className="px-1">
+        <h1 className="text-xl sm:text-2xl font-bold text-gray-900">
           📊 Tổng quan tài khoản
         </h1>
-        <p className="text-gray-500 mt-1">
-          Xin chào <b>{user?.username}</b>, quản lý ví của bạn tại đây
+        <p className="text-sm text-gray-500 mt-1">
+          Xin chào <b>{user?.username}</b>
         </p>
       </div>
 
       {/* WALLET STATS */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         <StatCard
           label="Số dư hiện tại"
           value={`${balance.toLocaleString()} ₫`}
@@ -142,30 +143,31 @@ export default function TradersOverview() {
       </div>
 
       {/* DEPOSIT */}
-      <div className="bg-white rounded-2xl shadow p-6 flex flex-col md:flex-row gap-4 items-center justify-between">
+      <div className="bg-white rounded-2xl shadow-md p-4 space-y-4">
+
         <div>
-          <h3 className="font-semibold text-lg">Nạp tiền vào ví</h3>
-          <p className="text-sm text-gray-500">
+          <h3 className="font-semibold text-base">
+            💰 Nạp tiền vào ví
+          </h3>
+          <p className="text-xs text-gray-500">
             Số tiền tối thiểu: 10.000₫
-          </p>
-          <p className="text-sm text-red-500">
-            Tính năng đang được phát triển, nếu có trục trặc vui lòng liên hệ qua số 0905087335 hoặc gửi gmail ở trang chủ để được hỗ trợ sớm nhất.
           </p>
         </div>
 
-        <div className="flex gap-3">
+        <div className="space-y-3">
           <input
             type="number"
-            placeholder="Nhập số tiền"
+            placeholder="Nhập số tiền (VD: 50000)"
             value={depositAmount}
             onChange={(e) => setDepositAmount(e.target.value)}
             disabled={waitingPayment}
-            className="border rounded-lg px-4 py-2 w-52 focus:outline-none focus:ring-2 focus:ring-green-500"
+            className="w-full border rounded-xl px-4 py-3 text-base focus:outline-none focus:ring-2 focus:ring-green-500"
           />
+
           <button
             onClick={handleDeposit}
             disabled={depositLoading || waitingPayment}
-            className="bg-green-600 hover:bg-green-700 text-white px-6 py-2 rounded-lg font-medium disabled:opacity-50 transition"
+            className="w-full bg-green-600 active:scale-[0.98] hover:bg-green-700 text-white py-3 rounded-xl font-semibold transition disabled:opacity-50"
           >
             {depositLoading
               ? "Đang xử lý..."
@@ -174,14 +176,20 @@ export default function TradersOverview() {
                 : "Nạp tiền"}
           </button>
         </div>
+
+        <p className="text-xs text-red-500">
+          Nếu có trục trặc vui lòng liên hệ 0905087335 hoặc gửi gmail ở trang chủ.
+        </p>
       </div>
 
       {/* TRANSACTIONS */}
-      <div className="bg-white rounded-2xl shadow p-6">
-        <h2 className="text-xl font-bold mb-4">💳 Giao dịch gần đây</h2>
+      <div className="bg-white rounded-2xl shadow-md p-4">
+        <h2 className="text-base sm:text-lg font-bold mb-4">
+          💳 Giao dịch gần đây
+        </h2>
 
         {transactions.length === 0 ? (
-          <p className="text-center text-gray-500">
+          <p className="text-center text-gray-500 text-sm">
             Chưa có giao dịch nào
           </p>
         ) : (
@@ -189,33 +197,36 @@ export default function TradersOverview() {
             {transactions.map((tx, idx) => (
               <div
                 key={idx}
-                className="flex justify-between items-center bg-gray-50 hover:bg-gray-100 transition p-4 rounded-xl"
+                className="bg-gray-50 rounded-xl p-4 active:scale-[0.99] transition"
               >
-                <div>
-                  <p className="font-semibold">
-                    {tx.type === "DEPOSIT" && "📥 Nạp tiền"}
-                    {tx.type === "PAYMENT" && "💸 Thanh toán"}
-                    {tx.type === "WITHDRAW" && "📤 Rút tiền"}
-                  </p>
-                  <p className="text-xs text-gray-500">
-                    {new Date(tx.transactionDate).toLocaleString()}
-                  </p>
-                </div>
+                <div className="flex justify-between items-start">
+                  <div>
+                    <p className="font-semibold text-sm">
+                      {tx.type === "DEPOSIT" && "📥 Nạp tiền"}
+                      {tx.type === "PAYMENT" && "💸 Thanh toán"}
+                      {tx.type === "WITHDRAW" && "📤 Rút tiền"}
+                    </p>
+                    <p className="text-xs text-gray-500 mt-1">
+                      {new Date(tx.transactionDate).toLocaleString()}
+                    </p>
+                  </div>
 
-                <span
-                  className={`font-bold ${tx.type === "DEPOSIT"
-                      ? "text-green-600"
-                      : "text-red-600"
-                    }`}
-                >
-                  {tx.type === "DEPOSIT" ? "+" : "-"}
-                  {tx.amount.toLocaleString()}₫
-                </span>
+                  <span
+                    className={`font-bold text-sm ${tx.type === "DEPOSIT"
+                        ? "text-green-600"
+                        : "text-red-600"
+                      }`}
+                  >
+                    {tx.type === "DEPOSIT" ? "+" : "-"}
+                    {tx.amount.toLocaleString()}₫
+                  </span>
+                </div>
               </div>
             ))}
           </div>
         )}
       </div>
+
     </div>
   );
 }
@@ -224,10 +235,12 @@ export default function TradersOverview() {
 function StatCard({ label, value, color }) {
   return (
     <div
-      className={`bg-gradient-to-r ${color} p-6 rounded-2xl text-white shadow`}
+      className={`bg-gradient-to-r ${color} rounded-2xl p-5 text-white shadow-md`}
     >
-      <p className="text-sm opacity-90">{label}</p>
-      <p className="text-3xl font-bold mt-2">{value}</p>
+      <p className="text-xs opacity-90">{label}</p>
+      <p className="text-2xl sm:text-3xl font-bold mt-2 tracking-tight">
+        {value}
+      </p>
     </div>
   );
 }

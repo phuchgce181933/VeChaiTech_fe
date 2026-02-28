@@ -4,7 +4,7 @@ import { Navigation, Pagination, Autoplay } from "swiper/modules";
 import "swiper/css";
 import "swiper/css/navigation";
 import "swiper/css/pagination";
-
+import "./css/BannerSlide.css";
 export default function BannerSlide() {
   const API_BASE = import.meta.env.VITE_API_BASE_URL;
 
@@ -36,8 +36,8 @@ export default function BannerSlide() {
         const list = Array.isArray(json)
           ? json
           : Array.isArray(json?.data)
-          ? json.data
-          : [];
+            ? json.data
+            : [];
 
         setBanners(list.filter((b) => b.status === true));
       } catch (err) {
@@ -85,7 +85,7 @@ export default function BannerSlide() {
   }
 
   return (
-    <div className="relative w-full h-[360px] md:h-[500px] lg:h-[520px] overflow-hidden rounded-3xl shadow-xl">
+    <div className="eco-banner">
       <Swiper
         modules={[Navigation, Pagination, Autoplay]}
         navigation={{
@@ -95,7 +95,7 @@ export default function BannerSlide() {
         pagination={{ clickable: true }}
         autoplay={{ delay: 5000, disableOnInteraction: false }}
         loop
-        className="w-full h-full"
+        className="eco-swiper"
       >
         {banners.map((b) => (
           <SwiperSlide key={b.id}>
@@ -103,7 +103,7 @@ export default function BannerSlide() {
               href={b.targetUrl || "#"}
               target="_blank"
               rel="noopener noreferrer"
-              className="block w-full h-full relative"
+              className="eco-slide"
             >
               {/\.(mp4|webm|ogg)$/i.test(b.bannerUrl) ? (
                 <video
@@ -111,29 +111,30 @@ export default function BannerSlide() {
                   autoPlay
                   muted
                   loop
-                  className="w-full h-full object-cover"
+                  className="eco-media"
                 />
               ) : (
                 <img
                   src={b.bannerUrl}
                   alt={b.title || "Banner"}
-                  className="w-full h-full object-cover"
+                  className="eco-media"
                 />
               )}
 
-              <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent" />
+              {/* GREEN OVERLAY */}
+              <div className="eco-overlay" />
 
               {b.title && (
-                <div className="absolute bottom-10 left-6 md:left-12 text-white max-w-xl">
-                  <h2 className="text-3xl md:text-5xl font-extrabold">
-                    {b.title}
-                  </h2>
+                <div className="eco-content">
+                  <h2>{b.title}</h2>
 
                   {b.description && (
-                    <p className="mt-3 text-gray-200">
-                      {b.description}
-                    </p>
+                    <p>{b.description}</p>
                   )}
+
+                  <span className="eco-cta">
+                    Khám phá ngay →
+                  </span>
                 </div>
               )}
             </a>
@@ -141,12 +142,8 @@ export default function BannerSlide() {
         ))}
       </Swiper>
 
-      <button className="custom-prev absolute left-4 top-1/2 -translate-y-1/2 bg-white/40 w-10 h-10 rounded-full">
-        ‹
-      </button>
-      <button className="custom-next absolute right-4 top-1/2 -translate-y-1/2 bg-white/40 w-10 h-10 rounded-full">
-        ›
-      </button>
+      <button className="custom-prev eco-nav-btn">‹</button>
+      <button className="custom-next eco-nav-btn">›</button>
     </div>
   );
 }

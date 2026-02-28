@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
-
+import "./css/RecyclerDemands.css";
 export default function RecyclerDemands() {
   const [demands, setDemands] = useState([]);
   const [selected, setSelected] = useState(null);
@@ -43,152 +43,173 @@ export default function RecyclerDemands() {
       });
   };
 
-  return (
-    <section className="py-12 md:py-16 mt-10">
-      {!selected ? (
-        <>
-          <h2 className="text-4xl md:text-6xl font-bold text-center text-emerald-800 mb-20">
-            Doanh nghiệp tái chế
-          </h2>
+ return (
+  <section className="py-14 md:py-20 mt-10 bg-gradient-to-b from-emerald-50 to-white">
+    {!selected ? (
+      <>
+        <h2 className="text-3xl md:text-5xl font-bold text-center text-emerald-800 mb-14 tracking-tight">
+          Doanh nghiệp tái chế
+        </h2>
 
-          {/* ===== MOBILE: KÉO NGANG ===== */}
-          <div className="md:hidden">
-            <div
-              className="
-                flex gap-4 overflow-x-auto
-                px-4 pb-4
-                snap-x snap-mandatory
-              "
-              style={{ WebkitOverflowScrolling: "touch" }}
-            >
-              {demands.map((d) => (
-                <div
-                  key={d.id}
-                  onClick={() => selectDemand(d)}
-                  className="
-                    min-w-[80%]
-                    snap-start
-                    bg-white p-6
-                    rounded-2xl shadow
-                    cursor-pointer
-                    text-center
-                  "
-                >
-                  <img
-                    src={d.imageUrl}
-                    alt={d.name}
-                    className="w-20 h-20 mx-auto object-contain mb-4"
-                  />
-                  <h3 className="font-semibold text-emerald-700">
-                    {d.name}
-                  </h3>
-                </div>
-              ))}
-            </div>
-          </div>
-
-          {/* ===== DESKTOP: GRID ===== */}
-          <div className="hidden md:grid grid-cols-2 lg:grid-cols-4 gap-6 max-w-7xl mx-auto px-4 ">
+        {/* ===== MOBILE: KÉO NGANG ===== */}
+        <div className="md:hidden">
+          <div
+            className="
+              flex gap-5 overflow-x-auto
+              px-4 pb-6
+              snap-x snap-mandatory
+              no-scrollbar
+            "
+            style={{ WebkitOverflowScrolling: "touch" }}
+          >
             {demands.map((d) => (
               <div
                 key={d.id}
                 onClick={() => selectDemand(d)}
                 className="
-  bg-white p-6 rounded-2xl
-
-  border-2 border-emerald-50
-  hover:border-emerald-500
-
-  shadow hover:shadow-lg
-  cursor-pointer
-  transition
-  text-center
-"
-
+                  min-w-[85%]
+                  snap-start
+                  bg-white p-6
+                  rounded-3xl
+                  shadow-md
+                  active:scale-95
+                  transition
+                  cursor-pointer
+                  text-center
+                  border border-emerald-100
+                "
               >
                 <img
                   src={d.imageUrl}
                   alt={d.name}
-                  className="w-20 h-20 mx-auto object-contain mb-4"
+                  className="w-24 h-24 mx-auto object-contain mb-4"
                 />
-                <h3 className="font-semibold text-emerald-700">
+                <h3 className="font-semibold text-lg text-emerald-700">
                   {d.name}
                 </h3>
               </div>
             ))}
           </div>
-        </>
-      ) : (
-        <div className="max-w-7xl mx-auto px-4">
-          <button
-            onClick={() => setSelected(null)}
-            className="mb-6 text-emerald-700 font-medium"
-          >
-            ← Quay lại
-          </button>
+        </div>
 
-          <h3 className="text-xl md:text-2xl font-bold text-emerald-800 mb-6 md:mb-8">
-            Vật liệu của {selected.name}
-          </h3>
-
-          {/* ===== MOBILE: KÉO NGANG ===== */}
-          <div className="md:hidden">
+        {/* ===== DESKTOP: GRID ===== */}
+        <div className="hidden md:grid grid-cols-2 lg:grid-cols-4 gap-8 max-w-7xl mx-auto px-4">
+          {demands.map((d) => (
             <div
+              key={d.id}
+              onClick={() => selectDemand(d)}
               className="
-                flex gap-4 overflow-x-auto
-                pb-4
-                snap-x snap-mandatory
+                bg-white p-8 rounded-3xl
+                border border-emerald-100
+                hover:border-emerald-500
+                shadow-sm hover:shadow-xl
+                hover:-translate-y-2
+                transition-all duration-300
+                cursor-pointer
+                text-center
               "
             >
-              {wastes.map((w) => (
-                <div
-                  key={w.id}
-                  className="
-                    min-w-[75%]
-                    snap-start
-                    bg-white p-4
-                    rounded-2xl shadow
-                  "
-                >
-                  <img
-                    src={w.wasteUrl}
-                    alt={w.name}
-                    className="w-full h-32 object-cover rounded-xl mb-3"
-                  />
-                  <h4 className="font-semibold text-emerald-700">
-                    {w.name}
-                  </h4>
-                  <p className="text-sm text-gray-600 mt-1">
-                    💰 {w.price?.toLocaleString()} đ / kg
-                  </p>
-                </div>
-              ))}
+              <img
+                src={d.imageUrl}
+                alt={d.name}
+                className="w-24 h-24 mx-auto object-contain mb-5"
+              />
+              <h3 className="font-semibold text-lg text-emerald-700">
+                {d.name}
+              </h3>
             </div>
-          </div>
+          ))}
+        </div>
+      </>
+    ) : (
+      <div className="max-w-7xl mx-auto px-4">
+        <button
+          onClick={() => setSelected(null)}
+          className="
+            mb-8 inline-flex items-center gap-2
+            text-emerald-700 font-medium
+            hover:text-emerald-900
+            transition
+          "
+        >
+          ← Quay lại
+        </button>
 
-          {/* ===== DESKTOP: GRID ===== */}
-          <div className="hidden md:grid grid-cols-2 lg:grid-cols-4 gap-6">
+        <h3 className="text-2xl md:text-4xl font-bold text-emerald-800 mb-10">
+          Vật liệu của {selected.name}
+        </h3>
+
+        {/* ===== MOBILE: KÉO NGANG ===== */}
+        <div className="md:hidden">
+          <div
+            className="
+              flex gap-5 overflow-x-auto
+              pb-6
+              snap-x snap-mandatory
+              no-scrollbar
+            "
+          >
             {wastes.map((w) => (
               <div
                 key={w.id}
-                className="bg-white p-5 rounded-2xl shadow hover:shadow-lg"
+                className="
+                  min-w-[80%]
+                  snap-start
+                  bg-white p-5
+                  rounded-3xl
+                  shadow-md
+                  border border-emerald-100
+                "
               >
                 <img
                   src={w.wasteUrl}
                   alt={w.name}
-                  className="w-full h-32 object-cover rounded-xl mb-3"
+                  className="w-full h-40 object-cover rounded-2xl mb-4"
                 />
-                <h4 className="font-semibold text-emerald-700">
+
+                <h4 className="font-semibold text-lg text-emerald-700">
                   {w.name}
                 </h4>
-                <p className="text-sm text-gray-600 mt-1">
-                  💰 {w.price?.toLocaleString()} đ / kg
+
+                <p className="text-emerald-600 font-semibold mt-2 text-base">
+                  {w.price?.toLocaleString()} đ / kg
                 </p>
               </div>
             ))}
           </div>
         </div>
-      )}
-    </section>
-  );
+
+        {/* ===== DESKTOP: GRID ===== */}
+        <div className="hidden md:grid grid-cols-2 lg:grid-cols-4 gap-8">
+          {wastes.map((w) => (
+            <div
+              key={w.id}
+              className="
+                bg-white p-6 rounded-3xl
+                shadow-sm hover:shadow-xl
+                hover:-translate-y-2
+                transition-all duration-300
+                border border-emerald-100
+              "
+            >
+              <img
+                src={w.wasteUrl}
+                alt={w.name}
+                className="w-full h-40 object-cover rounded-2xl mb-4"
+              />
+
+              <h4 className="font-semibold text-lg text-emerald-700">
+                {w.name}
+              </h4>
+
+              <p className="text-emerald-600 font-semibold mt-2 text-base">
+                {w.price?.toLocaleString()} đ / kg
+              </p>
+            </div>
+          ))}
+        </div>
+      </div>
+    )}
+  </section>
+);
 }

@@ -41,7 +41,6 @@ export default function BlogPage() {
     };
 
     fetchPosts();
-
     return () => controller.abort();
   }, [API_BASE]);
 
@@ -51,12 +50,12 @@ export default function BlogPage() {
 
     return (
       <div className="space-y-1">
-        <h3 className="text-[#2E7D32] text-lg font-extrabold uppercase leading-snug">
+        <h3 className="text-[#2E7D32] text-base sm:text-lg font-bold leading-snug line-clamp-2">
           {title || "Không có tiêu đề"}
         </h3>
 
         {subtitle && (
-          <p className="text-gray-800 text-sm font-bold uppercase leading-snug">
+          <p className="text-gray-700 text-xs sm:text-sm font-semibold line-clamp-2">
             {subtitle}
           </p>
         )}
@@ -64,11 +63,23 @@ export default function BlogPage() {
     );
   };
 
-  /* ===== LOADING ===== */
+  /* ===== LOADING (Skeleton mobile-friendly) ===== */
   if (loading) {
     return (
-      <div className="flex justify-center items-center py-24">
-        <div className="w-10 h-10 border-4 border-green-600 border-t-transparent rounded-full animate-spin" />
+      <div className="max-w-7xl mx-auto px-4 py-12 grid gap-6">
+        {[...Array(3)].map((_, i) => (
+          <div
+            key={i}
+            className="animate-pulse bg-white rounded-2xl shadow-md overflow-hidden"
+          >
+            <div className="h-48 bg-gray-200" />
+            <div className="p-4 space-y-3">
+              <div className="h-4 bg-gray-200 rounded w-3/4" />
+              <div className="h-4 bg-gray-200 rounded w-1/2" />
+              <div className="h-10 bg-gray-200 rounded-full w-32 mt-4" />
+            </div>
+          </div>
+        ))}
       </div>
     );
   }
@@ -76,47 +87,85 @@ export default function BlogPage() {
   /* ===== ERROR ===== */
   if (error) {
     return (
-      <p className="text-center text-red-600 py-24 text-lg">
+      <p className="text-center text-red-600 py-20 text-base sm:text-lg">
         {error}
       </p>
     );
   }
 
   return (
-    <section className="relative py-10">
+    <section className="relative py-12 sm:py-16">
       <div className="max-w-7xl mx-auto px-4">
+
         {/* Title */}
-        <h1 className="text-center text-4xl sm:text-5xl font-extrabold text-[#2E7D32] mb-12 tracking-tight">
+        <h1 className="text-center text-2xl sm:text-4xl lg:text-5xl font-extrabold text-[#2E7D32] mb-10 sm:mb-14 tracking-tight">
           Tin tức & Blog
         </h1>
 
         {/* Grid */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-10">
+        {/* Grid / Scroll */}
+        <div
+          className="
+    flex sm:grid
+    sm:grid-cols-2
+    lg:grid-cols-3
+    gap-4 sm:gap-8
+    overflow-x-auto
+    sm:overflow-visible
+    pb-4
+    snap-x snap-mandatory
+    scrollbar-hide
+  "
+        >
           {posts.map((p) => (
             <article
               key={p.id}
-              className="bg-white rounded-2xl shadow-md overflow-hidden border border-[#A5D6A7]/40 hover:shadow-2xl hover:-translate-y-1 transition-all duration-300"
+              className="
+        min-w-[85%]
+        sm:min-w-0
+        bg-white
+        rounded-2xl
+        shadow-md
+        overflow-hidden
+        border border-[#A5D6A7]/40
+        transition-all duration-300
+        hover:shadow-xl
+        hover:-translate-y-1
+        snap-start
+      "
             >
               {/* Image */}
-              <img
-                src={
-                  p.imageUrl ||
-                  "https://placehold.co/600x350?text=Blog+Image"
-                }
-                alt={p.title}
-                className="w-full h-48 object-cover"
-                loading="lazy"
-              />
+              <div className="aspect-[16/9] overflow-hidden">
+                <img
+                  src={
+                    p.imageUrl ||
+                    "https://placehold.co/600x350?text=Blog+Image"
+                  }
+                  alt={p.title}
+                  className="w-full h-full object-cover"
+                  loading="lazy"
+                />
+              </div>
 
               {/* Content */}
-              <div className="p-6">
-                <div className="mb-3">
-                  {renderTitle(p.title)}
-                </div>
+              <div className="p-4">
+                {renderTitle(p.title)}
 
                 <Link
                   to={`/blog/${p.id}`}
-                  className="inline-flex items-center gap-1 mt-4 bg-[#4CAF50] hover:bg-[#388E3C] text-white px-4 py-2 rounded-full transition-all text-sm"
+                  className="
+            mt-4
+            inline-flex
+            justify-center
+            items-center
+            bg-[#4CAF50]
+            hover:bg-[#388E3C]
+            text-white
+            px-4 py-2
+            rounded-full
+            text-sm
+            transition-all
+          "
                 >
                   Đọc thêm →
                 </Link>
@@ -127,10 +176,11 @@ export default function BlogPage() {
 
         {/* EMPTY */}
         {posts.length === 0 && (
-          <p className="text-center text-gray-700 mt-20 text-xl">
+          <p className="text-center text-gray-600 mt-16 text-base sm:text-lg">
             😕 Hiện chưa có bài viết nào
           </p>
         )}
+
       </div>
     </section>
   );

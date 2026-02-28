@@ -1,12 +1,11 @@
 import { useState, useRef, useEffect } from "react";
-
+import "./css/Transactions.css";
 export default function CurrentLocation() {
   const [coords, setCoords] = useState(null);
   const [address, setAddress] = useState("");
   const [loading, setLoading] = useState(false);
   const watchIdRef = useRef(null);
 
-  /* ===== CLEANUP GPS ===== */
   useEffect(() => {
     return () => {
       if (watchIdRef.current) {
@@ -15,7 +14,6 @@ export default function CurrentLocation() {
     };
   }, []);
 
-  /* ===== GET CURRENT LOCATION ===== */
   const handleGetLocation = () => {
     if (!navigator.geolocation) {
       alert("Trình duyệt không hỗ trợ GPS");
@@ -37,18 +35,14 @@ export default function CurrentLocation() {
           );
 
           const data = await res.json();
-          setAddress(
-            data.display_name || "Không xác định được địa chỉ"
-          );
+          setAddress(data.display_name || "Không xác định được địa chỉ");
         } catch (err) {
-          console.error(err);
           setAddress("Lỗi khi lấy địa chỉ");
         } finally {
           setLoading(false);
         }
       },
-      (err) => {
-        console.error(err);
+      () => {
         alert("Không thể lấy vị trí. Hãy kiểm tra quyền GPS.");
         setLoading(false);
       },
@@ -60,44 +54,46 @@ export default function CurrentLocation() {
   };
 
   return (
-    <div className="max-w-md mx-auto p-6 bg-white rounded-2xl shadow">
-      <h2 className="text-xl font-bold text-emerald-700 mb-4">
-        📍 Vị trí hiện tại
-      </h2>
+    <section className="py-16 px-4 bg-gradient-to-b from-white to-emerald-50">
+      <div className="max-w-lg mx-auto">
 
-      <button
-        onClick={handleGetLocation}
-        disabled={loading}
-        className={`w-full py-3 rounded-xl font-semibold text-white transition
-          ${
-            loading
-              ? "bg-gray-400 cursor-not-allowed"
-              : "bg-emerald-600 hover:bg-emerald-700"
-          }
-        `}
-      >
-        {loading ? "Đang lấy vị trí..." : "Lấy vị trí của tôi"}
-      </button>
+        <div className="eco-card">
 
-      {coords && (
-        <div className="mt-4 text-sm text-gray-700 space-y-2">
-          <p>
-            <strong>Latitude:</strong> {coords.latitude}
-          </p>
-          <p>
-            <strong>Longitude:</strong> {coords.longitude}
-          </p>
+          <div className="eco-header">
+            <div className="eco-icon">🌿</div>
+            <h2>Vị trí hiện tại của bạn</h2>
+          </div>
 
-          {address && (
-            <p>
-              <strong>Địa chỉ:</strong>{" "}
-              <span className="text-gray-600">
-                {address}
-              </span>
-            </p>
+          <button
+            onClick={handleGetLocation}
+            disabled={loading}
+            className={`eco-btn ${loading ? "disabled" : ""}`}
+          >
+            {loading ? "Đang xác định vị trí..." : "Lấy vị trí của tôi"}
+          </button>
+
+          {coords && (
+            <div className="eco-result">
+              <div className="eco-line">
+                <span>Latitude</span>
+                <strong>{coords.latitude}</strong>
+              </div>
+
+              <div className="eco-line">
+                <span>Longitude</span>
+                <strong>{coords.longitude}</strong>
+              </div>
+
+              {address && (
+                <div className="eco-address">
+                  {address}
+                </div>
+              )}
+            </div>
           )}
+
         </div>
-      )}
-    </div>
+      </div>
+    </section>
   );
 }

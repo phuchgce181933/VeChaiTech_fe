@@ -1,0 +1,73 @@
+/* ===== GREEN THEME BACKGROUND ===== */
+.about-theme {
+  background: linear-gradient(
+    180deg,
+    #f0fdf4 0%,
+    #ecfdf5 40%,
+    #ffffff 100%
+  );
+}
+
+/* ===== TITLE ===== */
+.section-title {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #065f46;
+}
+
+@media (min-width: 640px) {
+  .section-title {
+    font-size: 2rem;
+  }
+}
+
+/* ===== DESCRIPTION ===== */
+.section-desc {
+  margin-top: 12px;
+  color: #4b5563;
+  font-size: 0.9rem;
+  max-width: 700px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+@media (min-width: 640px) {
+  .section-desc {
+    font-size: 1rem;
+  }
+}
+
+/* ===== GLASS GREEN CARD ===== */
+.green-card {
+  background: rgba(255, 255, 255, 0.75);
+  backdrop-filter: blur(14px);
+  box-shadow: 0 20px 40px rgba(16, 185, 129, 0.12);
+  transition: all 0.3s ease;
+}
+
+.green-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 30px 60px rgba(16, 185, 129, 0.2);
+}
+
+/* ===== GREEN BUTTON GLOBAL ===== */
+button {
+  background: linear-gradient(135deg, #10b981, #059669);
+  color: white;
+  border-radius: 999px;
+  padding: 10px 22px;
+  font-weight: 600;
+  transition: all 0.3s ease;
+}
+
+button:hover {
+  background: linear-gradient(135deg, #059669, #047857);
+  transform: translateY(-2px);
+  box-shadow: 0 10px 20px rgba(16, 185, 129, 0.25);
+}
+
+/* ===== FOOTER ===== */
+.green-footer {
+  background: linear-gradient(135deg, #064e3b, #022c22);
+  color: #d1fae5;
+}

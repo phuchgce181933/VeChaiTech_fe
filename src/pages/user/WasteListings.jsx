@@ -1,7 +1,7 @@
 import { useEffect, useState, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import axiosClient from "../../api/axiosClient";
-
+import "./css/WasteListings.css";
 export default function WasteListings() {
   const navigate = useNavigate();
   const scrollRef = useRef(null);
@@ -74,7 +74,7 @@ export default function WasteListings() {
   }
 
   return (
-    <section className="mt-12 sm:mt-20 px-3 sm:px-6">
+    <section className="waste-wrapper mt-12 sm:mt-20 px-3 sm:px-6">
       <h2 className="text-4xl md:text-6xl font-bold text-center text-emerald-800 mb-20">
         Vật liệu tái chế phổ biến 
       </h2>
