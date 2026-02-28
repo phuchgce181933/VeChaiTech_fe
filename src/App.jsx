@@ -1,4 +1,4 @@
-import { Routes, Route, Navigate  } from "react-router-dom";
+import { Routes, Route, Navigate } from "react-router-dom";
 
 import { ProtectedRoute } from "./components/ProtectedRoute";
 import UserLayout from "./layouts/UserLayout";
@@ -34,16 +34,16 @@ import UsersAdmin from "./pages/admin/UsersAdmin";
 import AdminRevenuePage from "./pages/admin/AdminRevenue";
 import AdminDashboard from "./pages/admin/AdminDashboard";
 function App() {
-  return  (
+  return (
     <Routes>
       {/* Layout dành cho user */}
       <Route path="/" element={<UserLayout />}>
-       <Route index element={<Navigate to="trang-chu" replace />} />
+        <Route index element={<Navigate to="trang-chu" replace />} />
         <Route path="trang-chu" element={<Home />} />
         <Route path="about" element={<About />} />
         <Route path="wastelistings" element={<WasteListings />} />
-       
-        <Route path="create-collection" element={<CreateOrder />} />       
+
+        <Route path="create-collection" element={<CreateOrder />} />
         <Route path="blog" element={<Blog />} />
         <Route path="blog/:id" element={<BlogDetail />} />
         <Route path="policy" element={<Policy />} />
@@ -60,18 +60,21 @@ function App() {
       <Route path="/admin" element={<AdminLayout />}>
         {/* Route con của admin */}
         <Route index element={<AdminDashboard />} />
-        <Route path="banner" element={<BannerAdmin/>} />
-        <Route path="chatthaitaiche" element={<WasteListingsAdmin/>} />
-        <Route path="thumua" element={<OrdersAdmin/>} />
+        <Route path="banner" element={<BannerAdmin />} />
+        <Route path="chatthaitaiche" element={<WasteListingsAdmin />} />
+        <Route path="thumua" element={<OrdersAdmin />} />
         <Route path="tintuc" element={<BlogAdmin />} />
         <Route path="users" element={<UsersAdmin />} />
         <Route path="quanlydoanhthu" element={<AdminRevenuePage />} />
         <Route path="caidat" element={<h2>Cài đặt</h2>} />
       </Route>
-      <Route path="/wallet/success" element={<WalletSuccess />} />
+      <Route
+        path="/wallet/success"
+        element={<WalletSuccess />}
+      />
       {/* Traders layout - Protected by role */}
       <Route
-      
+
         path="/traders"
         element={
           <ProtectedRoute requiredRole="ROLE_TRADERS">
@@ -80,7 +83,7 @@ function App() {
         }
       >
         <Route index element={<TradersOverview />} />
-        <Route path="orders" element={<TradersOrders />} />        
+        <Route path="orders" element={<TradersOrders />} />
         <Route path="accepted" element={<TradersAccepted />} />
         <Route path="completed" element={<TradersCompleted />} />
         <Route path="cancelled" element={<Cancelled />} />

@@ -8,7 +8,7 @@ export function AuthProvider({ children }) {
   const [isLoading, setIsLoading] = useState(true); // Tracking khi user đang load
 
   const login = (userData, token, roles) => {
-    const expirationTime = Date.now() + 10 * 60 * 1000; //  10 phút
+    const expirationTime = Date.now() + 7 * 24 * 60 * 60 * 1000; // 7 ngày  
 
     const userWithRole = {
       ...userData,
@@ -18,6 +18,7 @@ export function AuthProvider({ children }) {
     };
 
     localStorage.setItem("user", JSON.stringify(userWithRole));
+    localStorage.setItem("token", token);
     localStorage.setItem("expiration", expirationTime);
 
     setUser(userWithRole);
@@ -33,15 +34,14 @@ export function AuthProvider({ children }) {
 
   useEffect(() => {
     const storedUser = localStorage.getItem("user");
+    const storedToken = localStorage.getItem("token");
     const expiration = localStorage.getItem("expiration");
 
-    if (storedUser && expiration) {
+    if (storedUser && storedToken && expiration) {
       const parsedUser = JSON.parse(storedUser);
 
       if (Date.now() < parseInt(expiration, 10)) {
-        setUser(parsedUser);
-
-        console.log(parsedUser.token); // ✅ LOG SAU KHI CÓ USER
+        setUser({ ...parsedUser, token: storedToken });
 
         const timeout = setTimeout(() => {
           logout();
